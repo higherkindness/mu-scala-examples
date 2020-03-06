@@ -2,13 +2,13 @@
 
 # mu-scala-examples
 
-[Mu](https://higherkindness.io/mu-scala/) is a purely functional framework for building [RPC] and [HTTP] endpoint-based services.
+[Mu](https://higherkindness.io/mu-scala/) is a purely functional framework for building microservices.
 
-This repository brings some examples with some different use cases.
+This repository contains some examples of different use cases.
 
 ## Documentation
 
-The full documentation is available at the [mu](https://higherkindness.github.io/mu) site.
+The full documentation is available at the [Mu](https://higherkindness.github.io/mu) site.
 
 [comment]: # (Start Copyright)
 # Copyright
