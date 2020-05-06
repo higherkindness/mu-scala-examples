@@ -18,22 +18,21 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     lazy val V = new {
-      val catsEffect: String          = "2.1.2"
+      val catsEffect: String          = "2.1.3"
       val circe: String               = "0.13.0"
       val frees: String               = "0.8.2"
-      val fs2: String                 = "2.2.2"
-      val kindProjector: String       = "0.10.3"
+      val fs2: String                 = "2.3.0"
+      val kindProjector: String       = "0.11.0"
       val log4cats: String            = "1.0.1"
       val log4s: String               = "1.8.2"
       val logback: String             = "1.2.3"
-      val monix: String               = "3.1.0"
+      val monix: String               = "3.2.1"
       val mu                          = "0.20.1"
       val paradise: String            = "2.1.1"
       val pureconfig: String          = "0.12.3"
       val scala212: String            = "2.12.10"
       val scopt: String               = "3.7.1"
       val scalatest: String           = "3.1.1"
-      val scalatestplusScheck: String = "3.1.0.0-RC2"
       val slf4j: String               = "1.7.30"
     }
 
@@ -66,8 +65,8 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         "io.chrisdavenport" %% "log4cats-core"  % V.log4cats,
         "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
-        %%("fs2-core", V.fs2),
-        %%("cats-effect", V.catsEffect)
+        "co.fs2" %% "fs2-core" % V.fs2,
+        "org.typelevel" %% "cats-effect" % V.catsEffect
       )
     )
 
@@ -75,30 +74,30 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         "io.chrisdavenport" %% "log4cats-core"  % V.log4cats,
         "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
-        %%("monix", V.monix),
-        %%("cats-effect", V.catsEffect)
+        "io.monix" %% "monix" % V.monix,
+        "org.typelevel" %% "cats-effect" % V.catsEffect
       )
     )
 
     lazy val exampleRouteguideRuntimeSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
-        %%("monix", V.monix)
+        "io.monix" %% "monix" % V.monix
       )
     )
 
     lazy val exampleRouteguideCommonSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
-        %%("circe-core", V.circe),
-        %%("circe-generic", V.circe),
-        %%("circe-parser", V.circe),
-        %%("log4s", V.log4s),
-        %("logback-classic", V.logback)
+        "io.circe" %% "circe-core" % V.circe,
+        "io.circe" %% "circe-generic" % V.circe,
+        "io.circe" %% "circe-parser" % V.circe,
+        "org.log4s" %% "log4s" % V.log4s,
+        "ch.qos.logback" % "logback-classic" % V.logback
       )
     )
 
     lazy val exampleSeedLogSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
-        %("logback-classic", V.logback),
+        "ch.qos.logback" % "logback-classic" % V.logback,
         "io.chrisdavenport" %% "log4cats-core"  % V.log4cats,
         "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats
       )
@@ -120,8 +119,8 @@ object ProjectPlugin extends AutoPlugin {
     lazy val exampleTodolistCommonSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
         "io.frees" %% "frees-todolist-lib" % V.frees,
-        %%("log4s", V.log4s),
-        %("logback-classic", V.logback)
+        "org.log4s" %% "log4s" % V.log4s,
+        "ch.qos.logback" % "logback-classic" % V.logback
       )
     )
 
@@ -157,10 +156,10 @@ object ProjectPlugin extends AutoPlugin {
       crossScalaVersions := Seq(V.scala212), // , V.scala213), until next mu release
       scalacOptions --= Seq("-Xfuture", "-Xfatal-warnings"),
       Test / fork := true,
-      addCompilerPlugin(%%("kind-projector", V.kindProjector) cross CrossVersion.binary),
+      addCompilerPlugin("org.typelevel" %% "kind-projector" % V.kindProjector cross CrossVersion.full),
       libraryDependencies ++= Seq(
-        %%("scalatest", V.scalatest) % Test,
-        %("slf4j-nop", V.slf4j)      % Test
+        "org.scalatest" %% "scalatest" % V.scalatest % Test,
+        "org.slf4j" % "slf4j-nop" % V.slf4j      % Test
       )
     ) ++ Seq(
       orgMaintainersSetting := List(
