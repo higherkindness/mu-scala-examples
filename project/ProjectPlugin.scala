@@ -32,7 +32,6 @@ object ProjectPlugin extends AutoPlugin {
       val pureconfig: String    = "0.12.3"
       val scala212: String      = "2.12.10"
       val scopt: String         = "3.7.1"
-      val scalatest: String     = "3.1.1"
       val slf4j: String         = "1.7.30"
     }
 
@@ -65,6 +64,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         "io.chrisdavenport" %% "log4cats-core"  % V.log4cats,
         "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
+        "org.slf4j"         % "slf4j-simple"    % V.slf4j,
         "co.fs2"            %% "fs2-core"       % V.fs2,
         "org.typelevel"     %% "cats-effect"    % V.catsEffect
       )
@@ -74,6 +74,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         "io.chrisdavenport" %% "log4cats-core"  % V.log4cats,
         "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
+        "org.slf4j"         % "slf4j-simple"    % V.slf4j,
         "io.monix"          %% "monix"          % V.monix,
         "org.typelevel"     %% "cats-effect"    % V.catsEffect
       )
@@ -159,11 +160,6 @@ object ProjectPlugin extends AutoPlugin {
       addCompilerPlugin(
         "org.typelevel" %% "kind-projector" % V.kindProjector cross CrossVersion.full
       ),
-      libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % V.scalatest % Test,
-        "org.slf4j"     % "slf4j-nop"  % V.slf4j     % Test
-      )
-    ) ++ Seq(
       orgMaintainersSetting := List(
         Dev("developer47deg", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))
       )
