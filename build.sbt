@@ -2,43 +2,43 @@
 //// ROUTEGUIDE ////
 ////////////////////
 
-lazy val `example-routeguide-protocol` = project
+lazy val `routeguide-protocol` = project
   .in(file("routeguide/protocol"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-monix")))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(moduleName := "mu-rpc-example-routeguide-protocol")
 
-lazy val `example-routeguide-runtime` = project
+lazy val `routeguide-runtime` = project
   .in(file("routeguide/runtime"))
   .settings(noPublishSettings)
   .settings(coverageEnabled := false)
   .settings(moduleName := "mu-rpc-example-routeguide-runtime")
   .settings(exampleRouteguideRuntimeSettings)
 
-lazy val `example-routeguide-common` = project
+lazy val `routeguide-common` = project
   .in(file("routeguide/common"))
-  .dependsOn(`example-routeguide-protocol`)
+  .dependsOn(`routeguide-protocol`)
   .settings(libraryDependencies ++= Seq(mu("mu-config")))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(moduleName := "mu-rpc-example-routeguide-common")
   .settings(exampleRouteguideCommonSettings)
 
-lazy val `example-routeguide-server` = project
+lazy val `routeguide-server` = project
   .in(file("routeguide/server"))
-  .dependsOn(`example-routeguide-common`)
-  .dependsOn(`example-routeguide-runtime`)
+  .dependsOn(`routeguide-common`)
+  .dependsOn(`routeguide-runtime`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(moduleName := "mu-rpc-example-routeguide-server")
 
-lazy val `example-routeguide-client` = project
+lazy val `routeguide-client` = project
   .in(file("routeguide/client"))
-  .dependsOn(`example-routeguide-common`)
-  .dependsOn(`example-routeguide-runtime`)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-netty")))
+  .dependsOn(`routeguide-common`)
+  .dependsOn(`routeguide-runtime`)
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty")))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(moduleName := "mu-rpc-example-routeguide-client")
@@ -92,7 +92,7 @@ lazy val `seed-server-protocol-avro` = project
   .in(file("seed/server/modules/protocol_avro"))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-channel")))
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-service")))
 
 lazy val `seed-server-protocol-proto` = project
   .in(file("seed/server/modules/protocol_proto"))
@@ -152,7 +152,7 @@ lazy val `seed-client-process` = project
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(exampleSeedLogSettings)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-netty"), mu("mu-rpc-fs2")))
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-rpc-fs2")))
   .dependsOn(
     `seed-client-common`,
     `seed-server-protocol-avro`,
@@ -199,7 +199,7 @@ lazy val allSeedModules: Seq[ProjectReference] = Seq(
 lazy val allSeedModulesDeps: Seq[ClasspathDependency] =
   allSeedModules.map(ClasspathDependency(_, None))
 
-lazy val `example-seed` = project
+lazy val `seed` = project
   .in(file("seed"))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
@@ -211,34 +211,34 @@ lazy val `example-seed` = project
 ////  TODOLIST  ////
 ////////////////////
 
-lazy val `example-todolist-protocol` = project
+lazy val `todolist-protocol` = project
   .in(file("todolist/protocol"))
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-channel")))
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-service")))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(moduleName := "mu-rpc-example-todolist-protocol")
 
-lazy val `example-todolist-runtime` = project
+lazy val `todolist-runtime` = project
   .in(file("todolist/runtime"))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(moduleName := "mu-rpc-example-todolist-runtime")
 
-lazy val `example-todolist-server` = project
+lazy val `todolist-server` = project
   .in(file("todolist/server"))
-  .dependsOn(`example-todolist-protocol`)
-  .dependsOn(`example-todolist-runtime`)
+  .dependsOn(`todolist-protocol`)
+  .dependsOn(`todolist-runtime`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server"), mu("mu-config")))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(moduleName := "mu-rpc-example-todolist-server")
   .settings(exampleTodolistCommonSettings)
 
-lazy val `example-todolist-client` = project
+lazy val `todolist-client` = project
   .in(file("todolist/client"))
-  .dependsOn(`example-todolist-protocol`)
-  .dependsOn(`example-todolist-runtime`)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-netty"), mu("mu-config")))
+  .dependsOn(`todolist-protocol`)
+  .dependsOn(`todolist-runtime`)
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-config")))
   .settings(coverageEnabled := false)
   .settings(noPublishSettings)
   .settings(moduleName := "mu-rpc-example-todolist-client")
@@ -249,13 +249,13 @@ lazy val `example-todolist-client` = project
 ////////////////////////
 
 /////////HealthCheck Server Monix Example
-lazy val `example-health-server-monix` = project
+lazy val `health-server-monix` = project
   .in(file("health-check/health-server-monix"))
   .settings(
     libraryDependencies ++= Seq(
       mu("mu-rpc-server"),
       mu("mu-rpc-monix"),
-      mu("mu-rpc-health-check-unary")
+      mu("mu-rpc-health-check")
     )
   )
   .settings(healthCheckSettingsMonix)
@@ -264,13 +264,13 @@ lazy val `example-health-server-monix` = project
   .settings(moduleName := "mu-rpc-example-health-check-server-monix")
 
 /////////HealthCheck Server FS2 Example
-lazy val `example-health-server-fs2` = project
+lazy val `health-server-fs2` = project
   .in(file("health-check/health-server-fs2"))
   .settings(
     libraryDependencies ++= Seq(
       mu("mu-rpc-server"),
       mu("mu-rpc-fs2"),
-      mu("mu-rpc-health-check-unary")
+      mu("mu-rpc-health-check")
     )
   )
   .settings(healthCheckSettingsFS2)
@@ -279,11 +279,11 @@ lazy val `example-health-server-fs2` = project
   .settings(moduleName := "mu-rpc-example-health-check-server-fs2")
 
 /////////HealthCheck Client Example
-lazy val `example-health-client` = project
+lazy val `health-client` = project
   .in(file("health-check/health-client"))
-  .dependsOn(`example-health-server-monix`)
-  .dependsOn(`example-health-server-fs2`)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-netty"), mu("mu-config")))
+  .dependsOn(`health-server-monix`)
+  .dependsOn(`health-server-fs2`)
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-config")))
   .settings(healthCheckSettingsMonix)
   .settings(healthCheckSettingsFS2)
   .settings(coverageEnabled := false)
@@ -295,27 +295,23 @@ lazy val `example-health-client` = project
 //////////////////////////
 
 lazy val allModules: Seq[ProjectReference] = Seq(
-  `example-health-client`,
-  `example-health-server-monix`,
-  `example-health-server-fs2`,
-  `example-routeguide-protocol`,
-  `example-routeguide-common`,
-  `example-routeguide-runtime`,
-  `example-routeguide-server`,
-  `example-routeguide-client`,
-  `example-seed`,
-  `example-todolist-protocol`,
-  `example-todolist-runtime`,
-  `example-todolist-server`,
-  `example-todolist-client`
+  `health-client`,
+  `health-server-monix`,
+  `health-server-fs2`,
+  `routeguide-protocol`,
+  `routeguide-common`,
+  `routeguide-runtime`,
+  `routeguide-server`,
+  `routeguide-client`,
+  `seed`,
+  `todolist-protocol`,
+  `todolist-runtime`,
+  `todolist-server`,
+  `todolist-client`
 )
-
-lazy val allModulesDeps: Seq[ClasspathDependency] =
-  allModules.map(ClasspathDependency(_, None))
 
 lazy val root = project
   .in(file("."))
   .settings(name := "mu-scala-examples")
   .settings(noPublishSettings)
   .aggregate(allModules: _*)
-  .dependsOn(allModulesDeps: _*)

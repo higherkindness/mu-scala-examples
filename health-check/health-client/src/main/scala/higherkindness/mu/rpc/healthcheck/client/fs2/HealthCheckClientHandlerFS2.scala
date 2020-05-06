@@ -16,6 +16,7 @@
 
 package higherkindness.mu.rpc.healthcheck.client.fs2
 
+import fs2.Stream
 import cats.effect.{Async, Resource}
 import cats.implicits._
 import higherkindness.mu.rpc.healthcheck.fs2.serviceFS2.HealthCheckServiceFS2
@@ -34,16 +35,18 @@ class HealthCheckClientHandlerFS2[F[_]: Async](client: Resource[F, HealthCheckSe
       _      <- logger.info("Status of " + name + " service update to" + status)
     } yield ()
 
-  def watching(name: String) = client.use(
-    _.watch(new HealthCheck(name))
-      .evalMap(hs =>
-        logger.info(
-          "Service " + hs.hc.nameService + " updated to status " + hs.status.status + ". "
+  def watching(name: String) =
+    client.use(c =>
+      Stream
+        .force(c.watch(new HealthCheck(name)))
+        .evalMap(hs =>
+          logger.info(
+            "Service " + hs.hc.nameService + " updated to status " + hs.status.status + ". "
+          )
         )
-      )
-      .compile
-      .drain
-  )
+        .compile
+        .drain
+    )
 
   def settingAndCheck(name: String, status: ServerStatus) =
     for {

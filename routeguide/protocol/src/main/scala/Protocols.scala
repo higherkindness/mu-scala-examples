@@ -19,11 +19,6 @@ package example.routeguide.protocol
 import higherkindness.mu.rpc.protocol._
 import monix.reactive.Observable
 
-@outputPackage("routeguide")
-@option("java_multiple_files", true)
-@option("java_package", "io.grpc.examples.routeguide")
-@option("java_outer_classname", "RouteGuideProto")
-@option("objc_class_prefix", "RTG")
 // Based on https://github.com/grpc/grpc-java/blob/v1.10.x/examples/src/main/proto/route_guide.proto
 object Protocols {
 
@@ -108,7 +103,7 @@ object Protocols {
      * @param rectangle Rectangle.
      * @return Features available within the given Rectangle, in a streaming fashion.
      */
-    def listFeatures(rectangle: Rectangle): Observable[Feature]
+    def listFeatures(rectangle: Rectangle): F[Observable[Feature]]
 
     /**
      * A client-to-server streaming RPC.
@@ -130,7 +125,7 @@ object Protocols {
      * @param routeNotes Stream of RouteNotes.
      * @return Stream of RouteNotes.
      */
-    def routeChat(routeNotes: Observable[RouteNote]): Observable[RouteNote]
+    def routeChat(routeNotes: Observable[RouteNote]): F[Observable[RouteNote]]
   }
 
 }

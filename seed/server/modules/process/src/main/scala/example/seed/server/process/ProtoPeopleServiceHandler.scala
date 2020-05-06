@@ -17,6 +17,7 @@
 package example.seed.server.process
 
 import cats.effect.{Sync, Timer}
+import cats.syntax.applicative._
 import cats.syntax.functor._
 import example.seed.server.protocol.proto.people._
 import example.seed.server.protocol.proto.services.PeopleService
@@ -33,7 +34,7 @@ class ProtoPeopleServiceHandler[F[_]: Timer](implicit F: Sync[F], L: Logger[F])
   def getPerson(request: PeopleRequest): F[PeopleResponse] =
     L.info(s"$serviceName - Request: $request").as(PeopleResponse(Person(request.name, 10)))
 
-  def getPersonStream(request: Stream[F, PeopleRequest]): Stream[F, PeopleResponse] = {
+  def getPersonStream(request: Stream[F, PeopleRequest]): F[Stream[F, PeopleResponse]] = {
 
     def responseStream(person: PeopleRequest): Stream[F, PeopleResponse] = {
       val response = PeopleResponse(Person(person.name, 10))
@@ -45,11 +46,13 @@ class ProtoPeopleServiceHandler[F[_]: Timer](implicit F: Sync[F], L: Logger[F])
         )
     }
 
-    for {
+    val stream = for {
       person   <- request
       _        <- Stream.eval(L.info(s"$serviceName - Stream Request: $person"))
       response <- responseStream(person)
     } yield response
+
+    stream.pure[F]
   }
 
 }

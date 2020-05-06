@@ -9,19 +9,19 @@ from [this example in grpc-java](https://github.com/grpc/grpc-java/tree/v1.10.x/
 Run server (interpreted to `cats.effect.IO` in this case):
 
 ```bash
-sbt "project example-routeguide-server" "run"
+sbt routeguide-server/run
 ```
 
 Run client interpreting to `cats.effect.IO`:
 
 ```bash
-sbt "project example-routeguide-client" "runClientIO"
+sbt "project routeguide-client" runClientIO
 ```
 
 Run client interpreting to `monix.eval.Task`:
 
 ```bash
-sbt "project example-routeguide-client" "runClientTask"
+sbt "project routeguide-client" runClientTask
 ```
 
 [comment]: # (Start Copyright)

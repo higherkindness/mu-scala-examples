@@ -26,7 +26,7 @@ object services {
 
   @service(Protobuf) trait PeopleService[F[_]] {
     def getPerson(req: PeopleRequest): F[PeopleResponse]
-    def getPersonStream(req: Stream[F, PeopleRequest]): Stream[F, PeopleResponse]
+    def getPersonStream(req: Stream[F, PeopleRequest]): F[Stream[F, PeopleResponse]]
   }
 
 }

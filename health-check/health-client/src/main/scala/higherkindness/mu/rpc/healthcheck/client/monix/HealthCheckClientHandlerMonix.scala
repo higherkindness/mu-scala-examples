@@ -16,16 +16,16 @@
 
 package higherkindness.mu.rpc.healthcheck.client.monix
 
-import cats.effect.{Async, Resource}
+import cats.effect.{Effect, Resource}
 import cats.implicits._
 import monix.execution.Scheduler
-import monix.reactive.Consumer
+import monix.reactive.{Consumer, Observable}
 import higherkindness.mu.rpc.healthcheck.unary.handler.{HealthCheck, HealthStatus, ServerStatus}
 import higherkindness.mu.rpc.healthcheck.monix.serviceMonix.HealthCheckServiceMonix
 import higherkindness.mu.rpc.protocol.Empty
 import io.chrisdavenport.log4cats.Logger
 
-class HealthCheckClientHandlerMonix[F[_]: Async](client: Resource[F, HealthCheckServiceMonix[F]])(
+class HealthCheckClientHandlerMonix[F[_]: Effect](client: Resource[F, HealthCheckServiceMonix[F]])(
     implicit s: Scheduler,
     logger: Logger[F]
 ) {
@@ -40,8 +40,10 @@ class HealthCheckClientHandlerMonix[F[_]: Async](client: Resource[F, HealthCheck
   def watching(name: String) = {
     val consumer = Consumer.foreach(println)
     client
-      .use(
-        _.watch(new HealthCheck(name))
+      .use(c =>
+        Observable
+          .from(c.watch(new HealthCheck(name)))
+          .flatten
           .consumeWith(consumer)
           .toAsync[F]
       )
