@@ -19,6 +19,7 @@ package example.routeguide.server.handlers
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.UnaryOperator
 
+import cats.syntax.applicative._
 import cats.effect.{Async, ConcurrentEffect, Effect}
 import example.routeguide.protocol.Protocols._
 import example.routeguide.common.Utils._
@@ -43,7 +44,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
       point.findFeatureIn(features)
     }
 
-  override def listFeatures(rectangle: Rectangle): Observable[Feature] = {
+  override def listFeatures(rectangle: Rectangle): F[Observable[Feature]] = {
     val left   = Math.min(rectangle.lo.longitude, rectangle.hi.longitude)
     val right  = Math.max(rectangle.lo.longitude, rectangle.hi.longitude)
     val top    = Math.max(rectangle.lo.latitude, rectangle.hi.latitude)
@@ -60,7 +61,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
 
     logger.info(s"Listing features for $rectangle ...")
 
-    observable
+    observable.pure[F]
   }
 
   override def recordRoute(points: Observable[Point]): F[RouteSummary] =
@@ -86,7 +87,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
       .map(_._1)
       .toAsync[F]
 
-  override def routeChat(routeNotes: Observable[RouteNote]): Observable[RouteNote] =
+  override def routeChat(routeNotes: Observable[RouteNote]): F[Observable[RouteNote]] =
     routeNotes
       .flatMap { note: RouteNote =>
         logger.info(s"Got route note $note, adding it... ")
@@ -98,6 +99,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
         logger.warn(s"routeChat cancelled $e")
         throw e
       }
+      .pure[F]
 
   private[this] def addNote(note: RouteNote): Map[Point, List[RouteNote]] =
     routeNotes.updateAndGet(new UnaryOperator[Map[Point, List[RouteNote]]] {

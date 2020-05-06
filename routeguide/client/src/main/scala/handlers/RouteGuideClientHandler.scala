@@ -58,13 +58,18 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
       logger.info(s"*** ListFeatures: lowLat=$lowLat lowLon=$lowLon hiLat=$hiLat hiLon=$hiLon")
     ) *>
       client
-        .use(
-          _.listFeatures(
-            Rectangle(
-              lo = Point(lowLat, lowLon),
-              hi = Point(hiLat, hiLon)
+        .use(c =>
+          Observable
+            .from(
+              c.listFeatures(
+                Rectangle(
+                  lo = Point(lowLat, lowLon),
+                  hi = Point(hiLat, hiLon)
+                )
+              )
             )
-          ).zipWithIndex
+            .flatten
+            .zipWithIndex
             .map {
               case (feature, i) =>
                 logger.info(s"Result #$i: $feature")
@@ -106,26 +111,31 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
   override def routeChat: F[Unit] =
     Async[F].delay(logger.info("*** RouteChat")) *>
       client
-        .use(
-          _.routeChat(
-            Observable
-              .fromIterable(
-                List(
-                  RouteNote(message = "First message", location = Point(0, 0)),
-                  RouteNote(message = "Second message", location = Point(0, 1)),
-                  RouteNote(message = "Third message", location = Point(1, 0)),
-                  RouteNote(message = "Fourth message", location = Point(1, 1))
-                )
+        .use(c =>
+          Observable
+            .from(
+              c.routeChat(
+                Observable
+                  .fromIterable(
+                    List(
+                      RouteNote(message = "First message", location = Point(0, 0)),
+                      RouteNote(message = "Second message", location = Point(0, 1)),
+                      RouteNote(message = "Third message", location = Point(1, 0)),
+                      RouteNote(message = "Fourth message", location = Point(1, 1))
+                    )
+                  )
+                  .delayOnNext(10.milliseconds)
+                  .map { routeNote =>
+                    logger.info(
+                      s"Sending message '${routeNote.message}' at " +
+                        s"${routeNote.location.latitude}, ${routeNote.location.longitude}"
+                    )
+                    routeNote
+                  }
               )
-              .delayOnNext(10.milliseconds)
-              .map { routeNote =>
-                logger.info(
-                  s"Sending message '${routeNote.message}' at " +
-                    s"${routeNote.location.latitude}, ${routeNote.location.longitude}"
-                )
-                routeNote
-              }
-          ).map { note: RouteNote =>
+            )
+            .flatten
+            .map { note: RouteNote =>
               logger.info(
                 s"Got message '${note.message}' at " +
                   s"${note.location.latitude}, ${note.location.longitude}"

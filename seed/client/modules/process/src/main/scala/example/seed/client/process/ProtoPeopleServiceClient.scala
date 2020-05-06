@@ -65,7 +65,7 @@ object ProtoPeopleServiceClient {
           }
 
         for {
-          result <- client.getPersonStream(requestStream)
+          result <- Stream.force(client.getPersonStream(requestStream))
           _      <- Stream.eval(L.info(s"$serviceName Stream Result: $result"))
         } yield result.person
       }
