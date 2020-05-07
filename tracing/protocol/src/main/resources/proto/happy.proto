@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.example;
+
+message HappinessRequest {
+}
+
+message HappinessResponse {
+  bool happy = 1;
+}
+
+service HappinessService {
+  rpc CheckHappiness (HappinessRequest) returns (HappinessResponse);
+}

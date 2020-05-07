@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package com.example;
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloResponse {
+  string greeting = 1;
+  bool happy = 2;
+}
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloResponse);
+  rpc ClientStreaming (stream HelloRequest) returns (HelloResponse);
+  rpc ServerStreaming (HelloRequest) returns (stream HelloResponse);
+  rpc BidirectionalStreaming (stream HelloRequest) returns (stream HelloResponse);
+}

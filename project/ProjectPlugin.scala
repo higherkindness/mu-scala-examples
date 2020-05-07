@@ -6,6 +6,8 @@ import sbtorgpolicies.model._
 import sbtorgpolicies.templates._
 import sbtorgpolicies.templates.badges._
 import sbtorgpolicies.runnable.syntax._
+import higherkindness.mu.rpc.srcgen.Model._
+import higherkindness.mu.rpc.srcgen.SrcGenPlugin.autoImport._
 
 import scala.language.reflectiveCalls
 
@@ -28,6 +30,7 @@ object ProjectPlugin extends AutoPlugin {
       val logback: String       = "1.2.3"
       val monix: String         = "3.2.1"
       val mu: String            = "0.22.0"
+      val natchez: String       = "0.0.11"
       val paradise: String      = "2.1.1"
       val pureconfig: String    = "0.12.3"
       val scala212: String      = "2.12.10"
@@ -125,6 +128,43 @@ object ProjectPlugin extends AutoPlugin {
       )
     )
 
+    lazy val tracingProtocolSettings: Seq[Def.Setting[_]] = Seq(
+      libraryDependencies ++= Seq(
+        mu("mu-rpc-service"),
+        mu("mu-rpc-fs2")
+      ),
+      muSrcGenIdlType := IdlType.Proto,
+      muSrcGenIdiomaticEndpoints := true
+    )
+
+    lazy val tracingServerASettings: Seq[Def.Setting[_]] = Seq(
+      fork := true,
+      libraryDependencies ++= Seq(
+        mu("mu-rpc-server"),
+        mu("mu-rpc-client-netty"),
+        "org.tpolecat" %% "natchez-jaeger" % V.natchez,
+        "org.slf4j" % "slf4j-simple" % "1.7.30"
+      ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
+    )
+
+    lazy val tracingServerBSettings: Seq[Def.Setting[_]] = Seq(
+      fork := true,
+      libraryDependencies ++= Seq(
+        mu("mu-rpc-server"),
+        "org.tpolecat" %% "natchez-jaeger" % V.natchez,
+        "org.slf4j" % "slf4j-simple" % "1.7.30"
+      ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
+    )
+
+    lazy val tracingClientSettings: Seq[Def.Setting[_]] = Seq(
+      libraryDependencies ++= Seq(
+        mu("mu-rpc-client-netty"),
+        "dev.profunktor" %% "console4cats" % "0.8.1",
+        "org.tpolecat" %% "natchez-jaeger" % V.natchez,
+        "org.slf4j" % "slf4j-simple" % "1.7.30"
+      )
+    )
+
     lazy val noCrossCompilationLastScala: Seq[Def.Setting[_]] = Seq(
       scalaVersion := V.scala212,
       crossScalaVersions := Seq(V.scala212)
@@ -156,7 +196,6 @@ object ProjectPlugin extends AutoPlugin {
       scalaVersion := V.scala212,
       crossScalaVersions := Seq(V.scala212), // , V.scala213), until next mu release
       scalacOptions --= Seq("-Xfuture", "-Xfatal-warnings"),
-      Test / fork := true,
       addCompilerPlugin(
         "org.typelevel" %% "kind-projector" % V.kindProjector cross CrossVersion.full
       ),
