@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-package examples.todolist.client
+package com.example
 
-import cats.effect.IO
-import examples.todolist.client.ClientProgram._
-import examples.todolist.client.implicits._
-import org.log4s._
+import cats._
+import cats.implicits._
+import com.example.happy._
+import natchez._
 
-import scala.io.StdIn
+class MyHappinessService[F[_]: Applicative: Trace] extends HappinessService[F] {
 
-object ClientApp {
-
-  def main(args: Array[String]): Unit = {
-
-    val logger: Logger = getLogger
-
-    logger.info(s"${Thread.currentThread().getName} Starting client...")
-
-    (pongProgram[IO] *> exampleProgram[IO]).unsafeRunSync()
-
-    logger.info(s"${Thread.currentThread().getName} Closing client...")
-
-    StdIn.readLine()
-    (): Unit
-  }
+  def CheckHappiness(req: HappinessRequest): F[HappinessResponse] =
+    Trace[F].span("check happiness") {
+      HappinessResponse(happy = true).pure[F]
+    }
 
 }

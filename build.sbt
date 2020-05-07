@@ -5,52 +5,51 @@
 lazy val `routeguide-protocol` = project
   .in(file("routeguide/protocol"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-monix")))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-routeguide-protocol")
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `routeguide-runtime` = project
   .in(file("routeguide/runtime"))
-  .settings(noPublishSettings)
-  .settings(coverageEnabled := false)
-  .settings(moduleName := "mu-rpc-example-routeguide-runtime")
   .settings(exampleRouteguideRuntimeSettings)
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `routeguide-common` = project
   .in(file("routeguide/common"))
   .dependsOn(`routeguide-protocol`)
   .settings(libraryDependencies ++= Seq(mu("mu-config")))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-routeguide-common")
   .settings(exampleRouteguideCommonSettings)
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `routeguide-server` = project
   .in(file("routeguide/server"))
   .dependsOn(`routeguide-common`)
   .dependsOn(`routeguide-runtime`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-routeguide-server")
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `routeguide-client` = project
   .in(file("routeguide/client"))
   .dependsOn(`routeguide-common`)
   .dependsOn(`routeguide-runtime`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty")))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-routeguide-client")
   .settings(
     Compile / unmanagedSourceDirectories ++= Seq(
       baseDirectory.value / "src" / "main" / "scala-io",
       baseDirectory.value / "src" / "main" / "scala-task"
     )
   )
-  .settings(addCommandAlias("runClientIO", "runMain example.routeguide.client.io.ClientAppIO"))
   .settings(
+    addCommandAlias("runClientIO", "runMain example.routeguide.client.io.ClientAppIO"),
     addCommandAlias("runClientTask", "runMain example.routeguide.client.task.ClientAppTask")
+  )
+  .disablePlugins(SrcGenPlugin)
+
+lazy val routeguide = project
+  .aggregate(
+    `routeguide-protocol`,
+    `routeguide-runtime`,
+    `routeguide-common`,
+    `routeguide-server`,
+    `routeguide-client`
   )
 
 ////////////////////
@@ -61,23 +60,17 @@ lazy val `routeguide-client` = project
 
 lazy val `seed-config` = project
   .in(file("seed/shared/modules/config"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .settings(exampleSeedConfigSettings)
+  .disablePlugins(SrcGenPlugin)
 
 ////     Shared     ////
 
 lazy val allSharedModules: ProjectReference = `seed-config`
 
-lazy val allSharedModulesDeps: ClasspathDependency =
-  ClasspathDependency(allSharedModules, None)
-
 lazy val `seed-shared` = project
   .in(file("seed/shared"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .aggregate(allSharedModules)
-  .dependsOn(allSharedModulesDeps)
+  .disablePlugins(SrcGenPlugin)
 
 //////////////////////////
 ////  Server Modules  ////
@@ -85,34 +78,29 @@ lazy val `seed-shared` = project
 
 lazy val `seed-server-common` = project
   .in(file("seed/server/modules/common"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `seed-server-protocol-avro` = project
   .in(file("seed/server/modules/protocol_avro"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-service")))
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `seed-server-protocol-proto` = project
   .in(file("seed/server/modules/protocol_proto"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2")))
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `seed-server-process` = project
   .in(file("seed/server/modules/process"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .settings(exampleSeedLogSettings)
   .dependsOn(`seed-server-common`, `seed-server-protocol-avro`, `seed-server-protocol-proto`)
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `seed-server-app` = project
   .in(file("seed/server/modules/app"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
   .dependsOn(`seed-server-process`, `seed-config`)
+  .disablePlugins(SrcGenPlugin)
 
 //////////////////////////
 ////      Server      ////
@@ -126,17 +114,13 @@ lazy val allSeedServerModules: Seq[ProjectReference] = Seq(
   `seed-server-app`
 )
 
-lazy val allSeedServerModulesDeps: Seq[ClasspathDependency] =
-  allSeedServerModules.map(ClasspathDependency(_, None))
-
 lazy val `seed-server` = project
   .in(file("seed/server"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .aggregate(allSeedServerModules: _*)
-  .dependsOn(allSeedServerModulesDeps: _*)
-addCommandAlias("runAvroServer", "seed_server/runMain example.seed.server.app.AvroServerApp")
-addCommandAlias("runProtoServer", "seed_server/runMain example.seed.server.app.ProtoServerApp")
+  .disablePlugins(SrcGenPlugin)
+
+addCommandAlias("runAvroServer", "seed-server/runMain example.seed.server.app.AvroServerApp")
+addCommandAlias("runProtoServer", "seed-server/runMain example.seed.server.app.ProtoServerApp")
 
 //////////////////////////
 ////  Client Modules  ////
@@ -144,13 +128,10 @@ addCommandAlias("runProtoServer", "seed_server/runMain example.seed.server.app.P
 
 lazy val `seed-client-common` = project
   .in(file("seed/client/modules/common"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `seed-client-process` = project
   .in(file("seed/client/modules/process"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .settings(exampleSeedLogSettings)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-rpc-fs2")))
   .dependsOn(
@@ -158,13 +139,13 @@ lazy val `seed-client-process` = project
     `seed-server-protocol-avro`,
     `seed-server-protocol-proto`
   )
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `seed-client-app` = project
   .in(file("seed/client/modules/app"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .settings(exampleSeedClientAppSettings)
   .dependsOn(`seed-client-process`, `seed-config`)
+  .disablePlugins(SrcGenPlugin)
 
 //////////////////////////
 ////      Client      ////
@@ -176,17 +157,13 @@ lazy val allSeedClientModules: Seq[ProjectReference] = Seq(
   `seed-client-app`
 )
 
-lazy val allSeedClientModulesDeps: Seq[ClasspathDependency] =
-  allSeedClientModules.map(ClasspathDependency(_, None))
-
 lazy val `seed-client` = project
   .in(file("seed/client"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
   .aggregate(allSeedClientModules: _*)
-  .dependsOn(allSeedClientModulesDeps: _*)
-addCommandAlias("runAvroClient", "seed_client/runMain example.seed.client.app.AvroClientApp")
-addCommandAlias("runProtoClient", "seed_client/runMain example.seed.client.app.ProtoClientApp")
+  .disablePlugins(SrcGenPlugin)
+
+addCommandAlias("runAvroClient", "seed-client/runMain example.seed.client.app.AvroClientApp")
+addCommandAlias("runProtoClient", "seed-client/runMain example.seed.client.app.ProtoClientApp")
 
 // SEED root
 
@@ -196,16 +173,10 @@ lazy val allSeedModules: Seq[ProjectReference] = Seq(
   `seed-server`
 )
 
-lazy val allSeedModulesDeps: Seq[ClasspathDependency] =
-  allSeedModules.map(ClasspathDependency(_, None))
-
 lazy val `seed` = project
   .in(file("seed"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-seed")
   .aggregate(allSeedModules: _*)
-  .dependsOn(allSeedModulesDeps: _*)
+  .disablePlugins(SrcGenPlugin)
 
 ////////////////////
 ////  TODOLIST  ////
@@ -214,35 +185,35 @@ lazy val `seed` = project
 lazy val `todolist-protocol` = project
   .in(file("todolist/protocol"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-service")))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-todolist-protocol")
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `todolist-runtime` = project
   .in(file("todolist/runtime"))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-todolist-runtime")
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `todolist-server` = project
   .in(file("todolist/server"))
   .dependsOn(`todolist-protocol`)
   .dependsOn(`todolist-runtime`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server"), mu("mu-config")))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-todolist-server")
   .settings(exampleTodolistCommonSettings)
+  .disablePlugins(SrcGenPlugin)
 
 lazy val `todolist-client` = project
   .in(file("todolist/client"))
   .dependsOn(`todolist-protocol`)
   .dependsOn(`todolist-runtime`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-config")))
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-todolist-client")
   .settings(exampleTodolistCommonSettings)
+  .disablePlugins(SrcGenPlugin)
+
+lazy val todolist = project
+  .aggregate(
+    `todolist-protocol`,
+    `todolist-runtime`,
+    `todolist-server`,
+    `todolist-client`
+  )
 
 ////////////////////////
 ////  HEALTH-CHECK  ////
@@ -259,9 +230,7 @@ lazy val `health-server-monix` = project
     )
   )
   .settings(healthCheckSettingsMonix)
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-health-check-server-monix")
+  .disablePlugins(SrcGenPlugin)
 
 /////////HealthCheck Server FS2 Example
 lazy val `health-server-fs2` = project
@@ -274,9 +243,7 @@ lazy val `health-server-fs2` = project
     )
   )
   .settings(healthCheckSettingsFS2)
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-health-check-server-fs2")
+  .disablePlugins(SrcGenPlugin)
 
 /////////HealthCheck Client Example
 lazy val `health-client` = project
@@ -286,28 +253,56 @@ lazy val `health-client` = project
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-config")))
   .settings(healthCheckSettingsMonix)
   .settings(healthCheckSettingsFS2)
-  .settings(coverageEnabled := false)
-  .settings(noPublishSettings)
-  .settings(moduleName := "mu-rpc-example-health-check-client")
+  .disablePlugins(SrcGenPlugin)
+
+lazy val `health-check` = project
+  .aggregate(
+    `health-server-monix`,
+    `health-server-fs2`,
+    `health-client`
+  )
+
+////////////////////
+////  TRACING   ////
+////////////////////
+
+lazy val `tracing-protocol` = project
+  .in(file("tracing/protocol"))
+  .settings(tracingProtocolSettings)
+
+lazy val `tracing-server-A` = project
+  .in(file("tracing/serverA"))
+  .dependsOn(`tracing-protocol`)
+  .settings(tracingServerASettings)
+
+lazy val `tracing-server-B` = project
+  .in(file("tracing/serverB"))
+  .dependsOn(`tracing-protocol`)
+  .settings(tracingServerBSettings)
+
+lazy val `tracing-client` = project
+  .in(file("tracing/client"))
+  .dependsOn(`tracing-protocol`)
+  .settings(tracingClientSettings)
+
+lazy val tracing = project
+  .aggregate(
+    `tracing-protocol`,
+    `tracing-client`,
+    `tracing-server-A`,
+    `tracing-server-B`
+  )
 
 //////////////////////////
 //// MODULES REGISTRY ////
 //////////////////////////
 
 lazy val allModules: Seq[ProjectReference] = Seq(
-  `health-client`,
-  `health-server-monix`,
-  `health-server-fs2`,
-  `routeguide-protocol`,
-  `routeguide-common`,
-  `routeguide-runtime`,
-  `routeguide-server`,
-  `routeguide-client`,
-  `seed`,
-  `todolist-protocol`,
-  `todolist-runtime`,
-  `todolist-server`,
-  `todolist-client`
+  `health-check`,
+  routeguide,
+  seed,
+  todolist,
+  tracing
 )
 
 lazy val root = project
@@ -315,3 +310,4 @@ lazy val root = project
   .settings(name := "mu-scala-examples")
   .settings(noPublishSettings)
   .aggregate(allModules: _*)
+  .disablePlugins(SrcGenPlugin)
