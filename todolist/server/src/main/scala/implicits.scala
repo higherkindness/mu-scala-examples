@@ -42,7 +42,7 @@ sealed trait ServerImplicits extends CommonRuntime with RepositoriesImplicits {
   implicit val todoListRpcServiceHandler: TodoListRpcService[IO] =
     new TodoListRpcServiceHandler[IO]()
 
-  implicit val todoItemmRpcServiceHandler: TodoItemRpcService[IO] =
+  implicit val todoItemRpcServiceHandler: TodoItemRpcService[IO] =
     new TodoItemRpcServiceHandler[IO] {}
 }
 
@@ -69,7 +69,7 @@ sealed trait RepositoriesImplicits {
   implicit val todoListRepositoryHandler: TodoListRepository.Handler[IO] =
     new TodoListRepositoryHandler[IO]
 
-  implicit val todoItemRespositoryHandler: TodoItemRepository.Handler[IO] =
+  implicit val todoItemRepositoryHandler: TodoItemRepository.Handler[IO] =
     new TodoItemRepositoryHandler[IO]
 }
 
