@@ -22,7 +22,7 @@ import cats.effect.{Resource, Sync}
 import examples.todolist.client.clients.PingPongClient
 import examples.todolist.protocol.Protocols.PingPongService
 import higherkindness.mu.rpc.protocol.Empty
-import freestyle.tagless.logging.LoggingM
+import org.log4s._
 
 class PingPongClientHandler[F[_]: Sync](client: Resource[F, PingPongService[F]])
     extends PingPongClient[F] {
