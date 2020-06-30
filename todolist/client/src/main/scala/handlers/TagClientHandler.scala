@@ -24,6 +24,7 @@ import examples.todolist.client.clients.TagClient
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
 import higherkindness.mu.rpc.protocol.Empty
+// will need to address this
 import freestyle.tagless.logging.LoggingM
 
 class TagClientHandler[F[_]: Sync](client: Resource[F, TagRpcService[F]])(implicit log: LoggingM[F])
