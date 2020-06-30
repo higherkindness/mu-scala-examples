@@ -24,7 +24,7 @@ import examples.todolist.client.clients.TodoItemClient
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
 import higherkindness.mu.rpc.protocol.Empty
-import org.log4s._
+import freestyle.tagless.logging.LoggingM
 
 class TodoItemClientHandler[F[_]: Sync](client: Resource[F, TodoItemRpcService[F]])(
     implicit log: LoggingM[F]

@@ -22,7 +22,7 @@ import cats.syntax.functor._
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
 import examples.todolist.service.TagService
-import examples.todolst.Tag
+import examples.todolist.Tag
 import higherkindness.mu.rpc.protocol.Empty
 
 class TagRpcServiceHandler[F[_]](implicit M: Monad[F], service: TagService[F])
