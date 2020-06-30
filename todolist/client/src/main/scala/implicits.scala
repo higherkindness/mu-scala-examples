@@ -20,7 +20,6 @@ import cats.effect.{ContextShift, IO, Resource, Timer}
 import examples.todolist.client.handlers._
 import examples.todolist.protocol.Protocols._
 import examples.todolist.runtime.CommonRuntime
-import freestyle.tagless.loggingJVM.log4s.implicits._
 import higherkindness.mu.rpc.ChannelFor
 import higherkindness.mu.rpc.config.channel.ConfigForAddress
 
