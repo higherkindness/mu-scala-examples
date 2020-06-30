@@ -15,6 +15,7 @@
  */
 
 package examples.todolist.client
+
 package clients
 
 trait PingPongClient[F[_]] {
