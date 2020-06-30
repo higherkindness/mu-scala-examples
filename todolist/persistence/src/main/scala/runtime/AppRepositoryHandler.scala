@@ -23,7 +23,7 @@ import examples.todolist.model.AppModel
 import examples.todolist.persistence.AppRepository
 
 class AppRepositoryHandler[F[_]: Monad](implicit T: Transactor[F])
-    extends AppRepository.Handler[F] {
+    extends AppRepository[F] {
 
   import examples.todolist.persistence.runtime.queries.AppQueries._
 

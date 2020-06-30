@@ -23,7 +23,7 @@ import examples.todolist.Tag
 import examples.todolist.persistence.TagRepository
 
 class TagRepositoryHandler[F[_]: Monad](implicit T: Transactor[F])
-    extends TagRepository.Handler[F] {
+    extends TagRepository[F] {
 
   import examples.todolist.persistence.runtime.queries.TagQueries._
 

@@ -23,7 +23,7 @@ import examples.todolist.TodoList
 import examples.todolist.persistence.TodoListRepository
 
 class TodoListRepositoryHandler[F[_]: Monad](implicit T: Transactor[F])
-    extends TodoListRepository.Handler[F] {
+    extends TodoListRepository[F] {
 
   import examples.todolist.persistence.runtime.queries.TodoListQueries._
 
