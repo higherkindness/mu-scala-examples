@@ -24,7 +24,9 @@ import examples.todolist.persistence._
 import examples.todolist.protocol.Protocols._
 import examples.todolist.runtime.CommonRuntime
 import examples.todolist.server.handlers._
-// will need to address this
+// will need to address this eventually; can't remove it yet because all
+// of the service handlers rely on freestyle libs, which use freestyle logging
+// under the hood.  Will be addresses in a separate PR
 import freestyle.tagless.loggingJVM.log4s.implicits._
 import java.util.Properties
 
