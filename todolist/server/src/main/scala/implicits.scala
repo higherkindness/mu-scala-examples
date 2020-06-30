@@ -26,7 +26,7 @@ import examples.todolist.runtime.CommonRuntime
 import examples.todolist.server.handlers._
 // will need to address this eventually; can't remove it yet because all
 // of the service handlers rely on freestyle libs, which use freestyle logging
-// under the hood.  Will be addresses in a separate PR
+// under the hood.  Will be addresses in a separate MR that rewrites all the underlying
 import freestyle.tagless.loggingJVM.log4s.implicits._
 import java.util.Properties
 
@@ -44,7 +44,7 @@ sealed trait ServerImplicits extends CommonRuntime with RepositoriesImplicits {
   implicit val todoListRpcServiceHandler: TodoListRpcService[IO] =
     new TodoListRpcServiceHandler[IO]()
 
-  implicit val todoItemmRpcServiceHandler: TodoItemRpcService[IO] =
+  implicit val todoItemRpcServiceHandler: TodoItemRpcService[IO] =
     new TodoItemRpcServiceHandler[IO] {}
 }
 
@@ -71,7 +71,7 @@ sealed trait RepositoriesImplicits {
   implicit val todoListRepositoryHandler: TodoListRepository.Handler[IO] =
     new TodoListRepositoryHandler[IO]
 
-  implicit val todoItemRespositoryHandler: TodoItemRepository.Handler[IO] =
+  implicit val todoItemRepositoryHandler: TodoItemRepository.Handler[IO] =
     new TodoItemRepositoryHandler[IO]
 }
 
