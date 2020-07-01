@@ -17,7 +17,7 @@
 package examples.todolist.server
 package handlers
 
-import cats.effect.Sync
+import cats.effect.{IO, Sync}
 import cats.syntax.option._
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._

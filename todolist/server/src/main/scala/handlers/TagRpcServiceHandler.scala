@@ -34,42 +34,42 @@ class TagRpcServiceHandler[F[_]: Sync] extends TagRpcService[F] {
   val repo: TagRepository[F]
   val model: String = classOf[Tag].getSimpleName
 
-  def reset(empty: Empty.type): F[MessageId] =
+  override def reset(empty: Empty.type): F[MessageId] =
     for {
       _     <- L.debug(s"Trying to reset $model in repository")
       items <- repo.init
       _     <- L.warn(s"Reset $model table in repository")
     } yield items.map(MessageId)
 
-  def insert(tagRequest: TagRequest): F[TagResponse] =
+  override def insert(tagRequest: TagRequest): F[TagResponse] =
     for {
       _            <- L.debug(s"Trying to insert a $model")
       insertedItem <- repo.insert(tagRequest.toTag)
       _            <- L.info(s"Tried to add $model")
     } yield insertedItem.map(_.flatMap(_.toTagMessage)).map(TagResponse)
 
-  def retrieve(id: MessageId): F[TagResponse] =
+  override def retrieve(id: MessageId): F[TagResponse] =
     for {
       _    <- L.debug(s"Trying to retrieve a $model")
       item <- repo.get(id.value)
       _    <- L.info(s"Found $model: $item")
     } yield item.map(_.flatMap(_.toTagMessage)).map(TagResponse)
 
-  def list(empty: Empty.type): F[TagList] =
+  override def list(empty: Empty.type): F[TagList] =
     for {
       _     <- L.debug(s"Trying to get all $model models")
       items <- repo.list
       _     <- L.info(s"Found all $model models")
     } yield items.map(_.flatMap(_.toTagMessage)).map(TagList)
 
-  def update(tag: TagMessage): F[TagResponse] =
+  override def update(tag: TagMessage): F[TagResponse] =
     for {
       _           <- L.debug(s"Trying to update a $model")
       updatedItem <- repo.update(tag.toTag)
       _           <- L.info(s"Tried to update $model")
     } yield updatedItem.map(_.flatMap(_.toTagMessage)).map(TagResponse)
 
-  def destroy(id: MessageId): F[MessageId] =
+  override def destroy(id: MessageId): F[MessageId] =
     for {
       _            <- L.debug(s"Trying to delete a $model")
       deletedItems <- repo.delete(id.value)
