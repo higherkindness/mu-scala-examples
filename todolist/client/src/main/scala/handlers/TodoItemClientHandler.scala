@@ -30,17 +30,17 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 class TodoItemClientHandler[F[_]: Sync](client: Resource[F, TodoItemRpcService[F]])
     extends TodoItemClient[F] {
 
-  implicit def unsafeLogger[L[_]: Sync] = Slf4jLogger.getLogger[F]
+  val logger: Logger[F] = Slf4jLogger.getLogger[F]
 
   override def reset(): F[Int] =
     for {
-      _ <- Logger[F].debug(s"Calling to restart todo items data")
+      _ <- logger.debug(s"Calling to restart todo items data")
       r <- client.use(_.reset(Empty))
     } yield r.value
 
   override def insert(request: TodoItemRequest): F[Option[TodoItemMessage]] =
     for {
-      _ <- Logger[F].debug(
+      _ <- logger.debug(
         s"Calling to insert todo item with item ${request.item} to list ${request.todoListId}"
       )
       t <- client.use(_.insert(request))
@@ -48,19 +48,19 @@ class TodoItemClientHandler[F[_]: Sync](client: Resource[F, TodoItemRpcService[F
 
   override def retrieve(id: Int): F[Option[TodoItemMessage]] =
     for {
-      _ <- Logger[F].debug(s"Calling to get todo item with id: $id")
+      _ <- logger.debug(s"Calling to get todo item with id: $id")
       r <- client.use(_.retrieve(MessageId(id)))
     } yield r.msg
 
   override def list(): F[TodoItemList] =
     for {
-      _ <- Logger[F].debug(s"Calling to get all todo items")
+      _ <- logger.debug(s"Calling to get all todo items")
       r <- client.use(_.list(Empty))
     } yield r
 
   override def update(todoItem: TodoItemMessage): F[Option[TodoItemMessage]] =
     for {
-      _ <- Logger[F].debug(
+      _ <- logger.debug(
         s"Calling to update todo item ${todoItem.id} with item ${todoItem.id} from list ${todoItem.todoListId} and completed status ${todoItem.completed}"
       )
       r <- client.use(_.update(todoItem))
@@ -68,7 +68,7 @@ class TodoItemClientHandler[F[_]: Sync](client: Resource[F, TodoItemRpcService[F
 
   override def remove(id: Int): F[Int] =
     for {
-      _ <- Logger[F].debug(s"Calling to delete todo item with id: $id")
+      _ <- logger.debug(s"Calling to delete todo item with id: $id")
       r <- client.use(_.destroy(MessageId(id)))
     } yield r.value
 }

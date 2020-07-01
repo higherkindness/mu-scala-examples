@@ -18,7 +18,6 @@ package examples.todolist.service
 
 import cats.Monad
 import cats.implicits._
-import freestyle.tagless._
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import examples.todolist.Tag

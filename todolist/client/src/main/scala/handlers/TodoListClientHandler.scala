@@ -30,17 +30,17 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 class TodoListClientHandler[F[_]: Sync](client: Resource[F, TodoListRpcService[F]])
     extends TodoListClient[F] {
 
-  implicit def unsafeLogger[L[_]: Sync] = Slf4jLogger.getLogger[F]
+  val logger: Logger[F] = Slf4jLogger.getLogger[F]
 
   override def reset(): F[Int] =
     for {
-      _ <- Logger[F].debug(s"Calling to restart todo list data")
+      _ <- logger.debug(s"Calling to restart todo list data")
       r <- client.use(_.reset(Empty))
     } yield r.value
 
   override def insert(request: TodoListRequest): F[Option[TodoListMessage]] =
     for {
-      _ <- Logger[F].debug(
+      _ <- logger.debug(
         s"Calling to insert todo list with name: ${request.title} and id: ${request.tagId}"
       )
       t <- client.use(_.insert(request))
@@ -48,19 +48,19 @@ class TodoListClientHandler[F[_]: Sync](client: Resource[F, TodoListRpcService[F
 
   override def retrieve(id: Int): F[Option[TodoListMessage]] =
     for {
-      _ <- Logger[F].debug(s"Calling to get todo list with id: $id")
+      _ <- logger.debug(s"Calling to get todo list with id: $id")
       r <- client.use(_.retrieve(MessageId(id)))
     } yield r.msg
 
   override def list(): F[TodoListList] =
     for {
-      _ <- Logger[F].debug(s"Calling to get all todo lists")
+      _ <- logger.debug(s"Calling to get all todo lists")
       r <- client.use(_.list(Empty))
     } yield r
 
   override def update(todoList: TodoListMessage): F[Option[TodoListMessage]] =
     for {
-      _ <- Logger[F].debug(
+      _ <- logger.debug(
         s"Calling to update todo list with title: ${todoList.title}, tagId: ${todoList.tagId} and id: ${todoList.id}"
       )
       r <- client.use(_.update(todoList))
@@ -68,7 +68,7 @@ class TodoListClientHandler[F[_]: Sync](client: Resource[F, TodoListRpcService[F
 
   override def remove(id: Int): F[Int] =
     for {
-      _ <- Logger[F].debug(s"Calling to delete tag with id: $id")
+      _ <- logger.debug(s"Calling to delete tag with id: $id")
       r <- client.use(_.destroy(MessageId(id)))
     } yield r.value
 }

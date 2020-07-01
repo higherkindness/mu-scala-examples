@@ -17,7 +17,7 @@
 package examples.todolist.client
 package handlers
 
-import cats.syntax.functor._
+import cats.syntax.flatMap._
 import cats.effect.{Resource, Sync}
 import examples.todolist.client.clients.PingPongClient
 import examples.todolist.protocol.Protocols.PingPongService
@@ -28,15 +28,10 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 class PingPongClientHandler[F[_]: Sync](client: Resource[F, PingPongService[F]])
     extends PingPongClient[F] {
 
-  implicit def unsafeLogger[L[_]: Sync] = Slf4jLogger.getLogger[F]
+  val logger: Logger[F] = Slf4jLogger.getLogger[F]
 
   override def ping(): F[Unit] =
     client
       .use(_.ping(Empty))
-      // compiler complains about a discarded non-unit value below, which makes me think:
-      // since this method isn't pure is it even worth
-      // using log4cats?  The only benefit is moving from two logging libs to one
-      // for this module, which seems like a benefit to me
-      // I also don't understand why Logger[F].info doesn't return unit...
-      .map(p => Logger[F].info(s"Pong received with timestamp: ${p.time}"))
+      .flatMap(p => logger.info(s"Pong received with timestamp: ${p.time}"))
 }
