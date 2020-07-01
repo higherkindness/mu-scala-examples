@@ -33,10 +33,5 @@ class PingPongClientHandler[F[_]: Sync](client: Resource[F, PingPongService[F]])
   override def ping(): F[Unit] =
     client
       .use(_.ping(Empty))
-      // compiler complains about a discarded non-unit value below, which makes me think:
-      // since this method isn't pure is it even worth
-      // using log4cats?  The only benefit is moving from two logging libs to one
-      // for this module, which seems like a benefit to me
-      // I also don't understand why Logger[F].info doesn't return unit...
       .flatMap(p => Logger[F].info(s"Pong received with timestamp: ${p.time}"))
 }
