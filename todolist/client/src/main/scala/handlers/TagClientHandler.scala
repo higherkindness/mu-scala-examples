@@ -30,41 +30,41 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 class TagClientHandler[F[_]: Sync](client: Resource[F, TagRpcService[F]]) extends TagClient[F] {
 
-  implicit def unsafeLogger[L[_]: Sync] = Slf4jLogger.getLogger[F]
+  val logger: Logger[F] = Slf4jLogger.getLogger[F]
 
   override def reset(): F[Int] =
     for {
-      _ <- Logger[F].debug(s"Calling to restart tags data")
+      _ <- logger.debug(s"Calling to restart tags data")
       r <- client.use(_.reset(Empty))
     } yield r.value
 
   override def insert(request: TagRequest): F[Option[TagMessage]] =
     for {
-      _ <- Logger[F].debug(s"Calling to insert tag with name: ${request.name}")
+      _ <- logger.debug(s"Calling to insert tag with name: ${request.name}")
       t <- client.use(_.insert(request))
     } yield t.tag
 
   override def retrieve(id: Int): F[Option[TagMessage]] =
     for {
-      _ <- Logger[F].debug(s"Calling to get tag with id: $id")
+      _ <- logger.debug(s"Calling to get tag with id: $id")
       r <- client.use(_.retrieve(MessageId(id)))
     } yield r.tag
 
   override def list(): F[TagList] =
     for {
-      _ <- Logger[F].debug(s"Calling to get all tags")
+      _ <- logger.debug(s"Calling to get all tags")
       r <- client.use(_.list(Empty))
     } yield r
 
   override def update(tag: TagMessage): F[Option[TagMessage]] =
     for {
-      _ <- Logger[F].debug(s"Calling to update tag ${tag.id} with name ${tag.name}")
+      _ <- logger.debug(s"Calling to update tag ${tag.id} with name ${tag.name}")
       r <- client.use(_.update(tag))
     } yield r.tag
 
   override def remove(id: Int): F[Int] =
     for {
-      _ <- Logger[F].debug(s"Calling to delete tag with id: $id")
+      _ <- logger.debug(s"Calling to delete tag with id: $id")
       r <- client.use(_.destroy(MessageId(id)))
     } yield r.value
 }

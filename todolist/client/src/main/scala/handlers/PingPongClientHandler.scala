@@ -28,10 +28,10 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 class PingPongClientHandler[F[_]: Sync](client: Resource[F, PingPongService[F]])
     extends PingPongClient[F] {
 
-  implicit def unsafeLogger[L[_]: Sync] = Slf4jLogger.getLogger[F]
+  val logger: Logger[F] = Slf4jLogger.getLogger[F]
 
   override def ping(): F[Unit] =
     client
       .use(_.ping(Empty))
-      .flatMap(p => Logger[F].info(s"Pong received with timestamp: ${p.time}"))
+      .flatMap(p => logger.info(s"Pong received with timestamp: ${p.time}"))
 }
