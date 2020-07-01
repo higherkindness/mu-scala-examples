@@ -17,7 +17,7 @@
 package examples.todolist.client
 package handlers
 
-import cats.syntax.functor._
+import cats.syntax.flatMap._
 import cats.effect.{Resource, Sync}
 import examples.todolist.client.clients.PingPongClient
 import examples.todolist.protocol.Protocols.PingPongService
@@ -38,5 +38,5 @@ class PingPongClientHandler[F[_]: Sync](client: Resource[F, PingPongService[F]])
       // using log4cats?  The only benefit is moving from two logging libs to one
       // for this module, which seems like a benefit to me
       // I also don't understand why Logger[F].info doesn't return unit...
-      .map(p => Logger[F].info(s"Pong received with timestamp: ${p.time}"))
+      .flatMap(p => Logger[F].info(s"Pong received with timestamp: ${p.time}"))
 }
