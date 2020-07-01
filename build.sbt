@@ -191,6 +191,10 @@ lazy val `todolist-runtime` = project
   .in(file("todolist/runtime"))
   .disablePlugins(SrcGenPlugin)
 
+lazy val `todolist-model` = project
+  .in(file("todolist/model"))
+  .disablePlugins(SrcGenPlugin)
+
 lazy val `todolist-server` = project
   .in(file("todolist/server"))
   .dependsOn(`todolist-protocol`)
@@ -206,6 +210,22 @@ lazy val `todolist-client` = project
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-config")))
   .settings(exampleTodolistCommonSettings)
   .disablePlugins(SrcGenPlugin)
+
+lazy val `todolist-service` = project
+  .in(file("todolist/service"))
+  .dependsOn(`todolist-protocol`)
+  .dependsOn(`todolist-runtime`)
+  .dependsOn(`todolist-model`)
+  .settings(exampleTodolistCommonSettings)
+  .disablePlugins(SrcGenPlugin)
+ 
+lazy val `todolist-persistence` = project
+  .in(file("todolist/persistence"))
+  .dependsOn(`todolist-protocol`)
+  .dependsOn(`todolist-runtime`)
+  .dependsOn(`todolist-model`)
+  .settings(exampleTodolistCommonSettings)
+  .disablePlugins(SrcGenPlugin)  
 
 lazy val todolist = project
   .aggregate(
