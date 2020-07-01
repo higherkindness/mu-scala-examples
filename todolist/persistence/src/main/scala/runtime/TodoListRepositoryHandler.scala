@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 package examples.todolist.persistence.runtime
 
 import cats.Monad
+import cats.effect.Bracket
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import examples.todolist.TodoList
 import examples.todolist.persistence.TodoListRepository
 
-class TodoListRepositoryHandler[F[_]: Monad](implicit T: Transactor[F])
+class TodoListRepositoryHandler[F[_]: Monad](implicit T: Transactor[F], ev: Bracket[F, Throwable])
     extends TodoListRepository[F] {
 
   import examples.todolist.persistence.runtime.queries.TodoListQueries._
@@ -57,9 +58,9 @@ class TodoListRepositoryHandler[F[_]: Monad](implicit T: Transactor[F])
 
   def init: F[Int] =
     dropQuery.run
-      .flatMap(
-        drops =>
-          createQuery.run
-            .map(_ + drops))
+      .flatMap(drops =>
+        createQuery.run
+          .map(_ + drops)
+      )
       .transact(T)
 }

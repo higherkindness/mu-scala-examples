@@ -125,6 +125,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         "org.tpolecat"      %% "doobie-core"    % V.doobie,
         "org.tpolecat"      %% "doobie-h2"      % V.doobie,
+        "org.tpolecat"      %% "doobie-hikari"  % V.doobie,
         "io.chrisdavenport" %% "log4cats-core"  % V.log4cats,
         "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
         "ch.qos.logback"    % "logback-classic" % V.logback

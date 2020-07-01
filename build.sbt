@@ -191,10 +191,6 @@ lazy val `todolist-runtime` = project
   .in(file("todolist/runtime"))
   .disablePlugins(SrcGenPlugin)
 
-lazy val `todolist-model` = project
-  .in(file("todolist/model"))
-  .disablePlugins(SrcGenPlugin)
-
 lazy val `todolist-client` = project
   .in(file("todolist/client"))
   .dependsOn(`todolist-protocol`)
@@ -203,20 +199,16 @@ lazy val `todolist-client` = project
   .settings(exampleTodolistCommonSettings)
   .disablePlugins(SrcGenPlugin)
 
+lazy val `todolist-model` = project
+  .in(file("todolist/model"))
+  .settings(exampleTodolistCommonSettings)
+  .disablePlugins(SrcGenPlugin)
+
 lazy val `todolist-persistence` = project
   .in(file("todolist/persistence"))
-  .dependsOn(`todolist-protocol`)
-  .dependsOn(`todolist-runtime`)
   .dependsOn(`todolist-model`)
-  .settings(exampleTodolistCommonSettings)
-  .disablePlugins(SrcGenPlugin)  
-
-lazy val `todolist-service` = project
-  .in(file("todolist/service"))
-  .dependsOn(`todolist-protocol`)
   .dependsOn(`todolist-runtime`)
-  .dependsOn(`todolist-model`)
-  .dependsOn(`todolist-persistence`)
+  .dependsOn(`todolist-protocol`)
   .settings(exampleTodolistCommonSettings)
   .disablePlugins(SrcGenPlugin)
 
@@ -225,7 +217,7 @@ lazy val `todolist-server` = project
   .dependsOn(`todolist-protocol`)
   .dependsOn(`todolist-runtime`)
   .dependsOn(`todolist-model`)
-  .dependsOn(`todolist-service`)
+  .dependsOn(`todolist-persistence`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server"), mu("mu-config")))
   .settings(exampleTodolistCommonSettings)
   .disablePlugins(SrcGenPlugin)
@@ -236,7 +228,6 @@ lazy val todolist = project
     `todolist-runtime`,
     `todolist-server`,
     `todolist-client`,
-    `todolist-service`,
     `todolist-model`,
     `todolist-persistence`
   )
