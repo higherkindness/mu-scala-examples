@@ -17,21 +17,21 @@
 package examples.todolist.client
 package handlers
 
-import cats.syntax.functor._
+import cats.syntax.flatMap._
 import cats.effect.{Resource, Sync}
 import examples.todolist.client.clients.PingPongClient
 import examples.todolist.protocol.Protocols.PingPongService
 import higherkindness.mu.rpc.protocol.Empty
-import org.log4s._
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 class PingPongClientHandler[F[_]: Sync](client: Resource[F, PingPongService[F]])
     extends PingPongClient[F] {
 
-  val logger: Logger = getLogger
+  val logger: Logger[F] = Slf4jLogger.getLogger[F]
 
   override def ping(): F[Unit] =
     client
       .use(_.ping(Empty))
-      .map(p => logger.info(s"Pong received with timestamp: ${p.time}"))
-
+      .flatMap(p => logger.info(s"Pong received with timestamp: ${p.time}"))
 }
