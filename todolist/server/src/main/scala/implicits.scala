@@ -17,9 +17,8 @@
 package examples.todolist.server
 
 import cats.effect.{Blocker, ContextShift, IO, Timer}
-import doobie._
-import doobie.util.ExecutionContexts
-import doobie.util.transactor.Transactor
+import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
+import doobie.hikari.HikariTransactor
 import examples.todolist.persistence.runtime._
 import examples.todolist.persistence._
 import examples.todolist.protocol.Protocols._
@@ -46,25 +45,30 @@ sealed trait RepositoriesImplicits extends CommonRuntime {
 
   implicit val timer: Timer[IO]     = IO.timer(EC)
   implicit val cs: ContextShift[IO] = IO.contextShift(EC)
+  implicit val bl: Blocker          = Blocker.liftExecutionContext(EC)
 
-  // instantiated based on the documentation for a JDBC connection:
-  // https://tpolecat.github.io/doobie/docs/14-Managing-Connections.html#using-the-jdbc-drivermanager
-  implicit val xa = Transactor.fromDriverManager[IO](
-    "org.h2.Driver",
-    "jdbc:h2:mem:todo",
-    new Properties {
-      setProperty("username", "sa")
-      setProperty("password", "")
-      setProperty("maximumPoolSize", "10")
-      setProperty("minimumIdle", "10")
-      setProperty("idleTimeout", "600000")
-      setProperty("connectionTimeout", "30000")
-      setProperty("connectionTestQuery", "SELECT 1")
-      setProperty("maxLifetime", "1800000")
-      setProperty("autoCommit", "true")
-    },
-    Blocker.liftExecutionContext(ExecutionContexts.synchronous)
-  )
+  implicit val xa: HikariTransactor[IO] =
+    HikariTransactor[IO](
+      new HikariDataSource(
+        new HikariConfig(
+          new Properties {
+            setProperty("driverClassName", "org.h2.Driver")
+            setProperty("jdbcUrl", "jdbc:h2:mem:todo")
+            setProperty("username", "sa")
+            setProperty("password", "")
+            setProperty("maximumPoolSize", "10")
+            setProperty("minimumIdle", "10")
+            setProperty("idleTimeout", "600000")
+            setProperty("connectionTimeout", "30000")
+            setProperty("connectionTestQuery", "SELECT 1")
+            setProperty("maxLifetime", "1800000")
+            setProperty("autoCommit", "true")
+          }
+        )
+      ),
+      EC,
+      bl
+    )
 
   implicit val tagRepositoryHandler: TagRepository[IO] =
     new TagRepositoryHandler[IO]
