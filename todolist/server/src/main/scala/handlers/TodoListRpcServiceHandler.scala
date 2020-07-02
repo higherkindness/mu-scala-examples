@@ -29,12 +29,12 @@ import higherkindness.mu.rpc.protocol.Empty
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
-class TodoListRpcServiceHandler[F[_]: Sync] extends TodoListRpcService[F] {
+class TodoListRpcServiceHandler[F[_]: Sync](implicit repo: TodoListRepository[F])
+    extends TodoListRpcService[F] {
 
   import TodoListConversions._
 
-  val L: Logger[F] = Slf4jLogger.getLogger[F]
-  val repo: TodoListRepository[F]
+  val L: Logger[F]  = Slf4jLogger.getLogger[F]
   val model: String = classOf[TodoList].getSimpleName
 
   override def reset(empty: Empty.type): F[MessageId] =

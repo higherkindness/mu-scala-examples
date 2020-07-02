@@ -17,16 +17,17 @@
 package examples.todolist.persistence
 
 import examples.todolist.TodoItem
+import cats.~>
 
-trait TodoItemRepository[F[_]] {
+trait TodoItemRepository[F[_]] { self =>
 
   def insert(item: TodoItem): F[Option[TodoItem]]
 
   def get(id: Int): F[Option[TodoItem]]
 
-  def update(item: TodoItem): F[Option[TodoItem]]
-
   def delete(id: Int): F[Int]
+
+  def update(item: TodoItem): F[Option[TodoItem]]
 
   def list: F[List[TodoItem]]
 
@@ -35,4 +36,26 @@ trait TodoItemRepository[F[_]] {
   def create: F[Int]
 
   def init: F[Int]
+
+  def mapK[G[_]](fk: F ~> G): TodoItemRepository[G] = new TodoItemRepository[G] {
+    def insert(item: TodoItem): G[Option[TodoItem]] = fk(self.insert(item))
+
+    def get(id: Int): G[Option[TodoItem]] = fk(self.get(id))
+
+    def delete(id: Int): G[Int] = fk(self.delete(id))
+
+    def update(item: TodoItem): G[Option[TodoItem]] = fk(self.update(item))
+
+    def list: G[List[TodoItem]] = fk(self.list)
+
+    def drop: G[Int] = fk(self.drop)
+
+    def create: G[Int] = fk(self.create)
+
+    def init: G[Int] = fk(self.init)
+  }
+}
+
+object TodoItemRepository {
+  def apply[F[_]](implicit F: TodoItemRepository[F]): TodoItemRepository[F] = F
 }

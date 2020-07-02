@@ -28,12 +28,11 @@ import higherkindness.mu.rpc.protocol.Empty
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
-class TagRpcServiceHandler[F[_]: Sync] extends TagRpcService[F] {
+class TagRpcServiceHandler[F[_]: Sync](implicit repo: TagRepository[F]) extends TagRpcService[F] {
 
   import TagConversions._
 
-  val L: Logger[F] = Slf4jLogger.getLogger[F]
-  val repo: TagRepository[F]
+  val L: Logger[F]  = Slf4jLogger.getLogger[F]
   val model: String = classOf[Tag].getSimpleName
 
   override def reset(empty: Empty.type): F[MessageId] =
