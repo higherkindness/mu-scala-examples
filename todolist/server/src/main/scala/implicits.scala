@@ -53,16 +53,16 @@ sealed trait RepositoriesImplicits extends CommonRuntime {
     "org.h2.Driver",
     "jdbc:h2:mem:todo",
     new Properties {
-    setProperty("username", "sa")
-    setProperty("password", "")
-    setProperty("maximumPoolSize", "10")
-    setProperty("minimumIdle", "10")
-    setProperty("idleTimeout", "600000")
-    setProperty("connectionTimeout", "30000")
-    setProperty("connectionTestQuery", "SELECT 1")
-    setProperty("maxLifetime", "1800000")
-    setProperty("autoCommit", "true")
-  },
+      setProperty("username", "sa")
+      setProperty("password", "")
+      setProperty("maximumPoolSize", "10")
+      setProperty("minimumIdle", "10")
+      setProperty("idleTimeout", "600000")
+      setProperty("connectionTimeout", "30000")
+      setProperty("connectionTestQuery", "SELECT 1")
+      setProperty("maxLifetime", "1800000")
+      setProperty("autoCommit", "true")
+    },
     Blocker.liftExecutionContext(ExecutionContexts.synchronous)
   )
 
