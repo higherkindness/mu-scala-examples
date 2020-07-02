@@ -17,8 +17,10 @@
 package examples.todolist.server
 package handlers
 
-import cats.effect.{IO, Sync}
+import cats.effect.Sync
 import cats.syntax.option._
+import cats.syntax.functor._
+import cats.syntax.flatMap._
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
 import examples.todolist.TodoList
@@ -40,42 +42,42 @@ class TodoListRpcServiceHandler[F[_]: Sync] extends TodoListRpcService[F] {
       _   <- L.debug(s"Trying to reset $model in repository")
       ops <- repo.init
       _   <- L.warn(s"Reset $model table in repository")
-    } yield ops.map(MessageId)
+    } yield MessageId(ops)
 
   override def insert(item: TodoListRequest): F[TodoListResponse] =
     for {
       _            <- L.debug(s"Trying to insert a $model")
       insertedItem <- repo.insert(item.toTodoList)
       _            <- L.info(s"Tried to add a $model")
-    } yield insertedItem.map(_.toTodoList)
+    } yield insertedItem.toTodoList
 
   override def retrieve(id: MessageId): F[TodoListResponse] =
     for {
       _    <- L.debug(s"Trying to retrieve a $model")
       item <- repo.get(id.value)
       _    <- L.info(s"Found ${item}")
-    } yield item.map(_.toTodoList)
+    } yield item.toTodoList
 
   override def list(empty: Empty.type): F[TodoListList] =
     for {
       _     <- L.debug(s"Trying to get all $model models")
       items <- repo.list
       _     <- L.info(s"Found all $model models")
-    } yield items.map(_.flatMap(_.toTodoListMessage)).map(TodoListList)
+    } yield TodoListList(items.flatMap(_.toTodoListMessage))
 
   override def update(item: TodoListMessage): F[TodoListResponse] =
     for {
       _           <- L.debug(s"Trying to update a $model")
       updatedItem <- repo.update(item.toTodoList)
       _           <- L.info(s"Tried to update a $model")
-    } yield updatedItem.map(_.toTodoList)
+    } yield updatedItem.toTodoList
 
   override def destroy(id: MessageId): F[MessageId] =
     for {
       _           <- L.debug(s"Trying to destroy a $model")
       deletedItem <- repo.delete(id.value)
       _           <- L.info(s"Tried to delete $model")
-    } yield deletedItem.map(MessageId)
+    } yield MessageId(deletedItem)
 }
 
 object TodoListConversions {

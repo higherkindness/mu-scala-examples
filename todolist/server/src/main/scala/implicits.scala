@@ -18,6 +18,7 @@ package examples.todolist.server
 
 import cats.effect.{ContextShift, IO, Timer}
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
+import doobie.hikari._
 import doobie.hikari.HikariTransactor
 import examples.todolist.persistence.runtime._
 import examples.todolist.persistence._
@@ -26,10 +27,7 @@ import examples.todolist.runtime.CommonRuntime
 import examples.todolist.server.handlers._
 import java.util.Properties
 
-sealed trait ServerImplicits extends CommonRuntime with RepositoriesImplicits {
-
-  implicit val timer: Timer[IO]     = IO.timer(EC)
-  implicit val cs: ContextShift[IO] = IO.contextShift(EC)
+sealed trait ServerImplicits extends RepositoriesImplicits {
 
   implicit val pingPongServiceHandler: PingPongService[IO] =
     new PingPongServiceHandler[IO]()
@@ -44,7 +42,10 @@ sealed trait ServerImplicits extends CommonRuntime with RepositoriesImplicits {
     new TodoItemRpcServiceHandler[IO]()
 }
 
-sealed trait RepositoriesImplicits {
+sealed trait RepositoriesImplicits extends CommonRuntime {
+
+  implicit val timer: Timer[IO]     = IO.timer(EC)
+  implicit val cs: ContextShift[IO] = IO.contextShift(EC)
 
   implicit val xa: HikariTransactor[IO] =
     HikariTransactor[IO](new HikariDataSource(new HikariConfig(new Properties {

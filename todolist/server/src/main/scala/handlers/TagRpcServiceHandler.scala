@@ -18,6 +18,8 @@ package examples.todolist.server
 package handlers
 
 import cats.effect.Sync
+import cats.syntax.functor._
+import cats.syntax.flatMap._
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
 import examples.todolist.Tag
@@ -39,42 +41,42 @@ class TagRpcServiceHandler[F[_]: Sync] extends TagRpcService[F] {
       _     <- L.debug(s"Trying to reset $model in repository")
       items <- repo.init
       _     <- L.warn(s"Reset $model table in repository")
-    } yield items.map(MessageId)
+    } yield MessageId(items)
 
   override def insert(tagRequest: TagRequest): F[TagResponse] =
     for {
       _            <- L.debug(s"Trying to insert a $model")
       insertedItem <- repo.insert(tagRequest.toTag)
       _            <- L.info(s"Tried to add $model")
-    } yield insertedItem.map(_.flatMap(_.toTagMessage)).map(TagResponse)
+    } yield TagResponse(insertedItem.flatMap(_.toTagMessage))
 
   override def retrieve(id: MessageId): F[TagResponse] =
     for {
       _    <- L.debug(s"Trying to retrieve a $model")
       item <- repo.get(id.value)
       _    <- L.info(s"Found $model: $item")
-    } yield item.map(_.flatMap(_.toTagMessage)).map(TagResponse)
+    } yield TagResponse(item.flatMap(_.toTagMessage))
 
   override def list(empty: Empty.type): F[TagList] =
     for {
       _     <- L.debug(s"Trying to get all $model models")
       items <- repo.list
       _     <- L.info(s"Found all $model models")
-    } yield items.map(_.flatMap(_.toTagMessage)).map(TagList)
+    } yield TagList(items.flatMap(_.toTagMessage))
 
   override def update(tag: TagMessage): F[TagResponse] =
     for {
       _           <- L.debug(s"Trying to update a $model")
       updatedItem <- repo.update(tag.toTag)
       _           <- L.info(s"Tried to update $model")
-    } yield updatedItem.map(_.flatMap(_.toTagMessage)).map(TagResponse)
+    } yield TagResponse(updatedItem.flatMap(_.toTagMessage))
 
   override def destroy(id: MessageId): F[MessageId] =
     for {
       _            <- L.debug(s"Trying to delete a $model")
       deletedItems <- repo.delete(id.value)
       _            <- L.info(s"Tried to delete $model")
-    } yield deletedItems.map(MessageId)
+    } yield MessageId(deletedItems)
 }
 
 object TagConversions {
