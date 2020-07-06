@@ -17,50 +17,43 @@
 package examples.todolist.persistence.runtime
 
 import cats.Monad
-import cats.effect.Bracket
-import doobie.implicits._
-import doobie.util.transactor.Transactor
+import doobie.ConnectionIO
 import examples.todolist.Tag
 import examples.todolist.persistence.TagRepository
 
-class TagRepositoryHandler[F[_]: Monad](implicit T: Transactor[F], ev: Bracket[F, Throwable])
-    extends TagRepository[F] {
+class TagRepositoryHandler[F[_]: Monad] extends TagRepository[ConnectionIO] {
 
   import examples.todolist.persistence.runtime.queries.TagQueries._
 
-  def insert(input: Tag): F[Option[Tag]] =
+  override def insert(input: Tag): ConnectionIO[Option[Tag]] =
     insertQuery(input)
       .withUniqueGeneratedKeys[Int]("id")
       .flatMap(getQuery(_).option)
-      .transact(T)
 
-  def get(id: Int): F[Option[Tag]] =
-    getQuery(id).option.transact(T)
+  override def get(id: Int): ConnectionIO[Option[Tag]] =
+    getQuery(id).option
 
-  def update(tag: Tag): F[Option[Tag]] =
+  override def update(tag: Tag): ConnectionIO[Option[Tag]] =
     updateQuery(tag).run
       .flatMap(_ => getQuery(tag.id.get).option)
-      .transact(T)
 
-  def delete(id: Int): F[Int] =
-    deleteQuery(id).run.transact(T)
+  override def delete(id: Int): ConnectionIO[Int] =
+    deleteQuery(id).run
 
-  def list: F[List[Tag]] =
+  override def list: ConnectionIO[List[Tag]] =
     listQuery
       .to[List]
-      .transact(T)
 
-  def drop: F[Int] =
-    dropQuery.run.transact(T)
+  override def drop: ConnectionIO[Int] =
+    dropQuery.run
 
-  def create: F[Int] =
-    createQuery.run.transact(T)
+  override def create: ConnectionIO[Int] =
+    createQuery.run
 
-  def init: F[Int] =
+  override def init: ConnectionIO[Int] =
     dropQuery.run
       .flatMap(drops =>
         createQuery.run
           .map(_ + drops)
       )
-      .transact(T)
 }

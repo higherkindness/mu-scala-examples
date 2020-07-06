@@ -15,10 +15,11 @@
  */
 
 package examples.todolist.persistence
+import cats.~>
 
 import examples.todolist.Tag
 
-trait TagRepository[F[_]] {
+trait TagRepository[F[_]] { self =>
 
   def insert(tag: Tag): F[Option[Tag]]
 
@@ -35,6 +36,24 @@ trait TagRepository[F[_]] {
   def create: F[Int]
 
   def init: F[Int]
+
+  def mapK[G[_]](fk: F ~> G): TagRepository[G] = new TagRepository[G] {
+    def insert(tag: Tag): G[Option[Tag]] = fk(self.insert(tag))
+
+    def get(id: Int): G[Option[Tag]] = fk(self.get(id))
+
+    def delete(id: Int): G[Int] = fk(self.delete(id))
+
+    def update(tag: Tag): G[Option[Tag]] = fk(self.update(tag))
+
+    def list: G[List[Tag]] = fk(self.list)
+
+    def drop: G[Int] = fk(self.drop)
+
+    def create: G[Int] = fk(self.create)
+
+    def init: G[Int] = fk(self.init)
+  }
 }
 
 object TagRepository {

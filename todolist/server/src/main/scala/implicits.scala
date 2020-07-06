@@ -18,6 +18,7 @@ package examples.todolist.server
 
 import cats.effect.{Blocker, ContextShift, IO, Timer}
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
+import doobie.ConnectionIO
 import doobie.hikari.HikariTransactor
 import examples.todolist.persistence.runtime._
 import examples.todolist.persistence._
@@ -25,6 +26,8 @@ import examples.todolist.protocol.Protocols._
 import examples.todolist.runtime.CommonRuntime
 import examples.todolist.server.handlers._
 import java.util.Properties
+import doobie.util.transactor.Transactor
+import doobie.util.transactor
 
 sealed trait ServerImplicits extends RepositoriesImplicits {
 
@@ -47,6 +50,14 @@ sealed trait RepositoriesImplicits extends CommonRuntime {
   implicit val cs: ContextShift[IO] = IO.contextShift(EC)
   implicit val bl: Blocker          = Blocker.liftExecutionContext(EC)
 
+  // implicit val ya: Resource[IO, HikariTransactor[IO]] = HikariTransactor.newHikariTransactor[IO](
+  //   "org.h2.Driver",
+  //   "jdbc:h2:mem:todo",
+  //   "sa",
+  //   "",
+  //   EC,
+  //   bl
+  // )
   implicit val xa: HikariTransactor[IO] =
     HikariTransactor[IO](
       new HikariDataSource(
@@ -71,7 +82,7 @@ sealed trait RepositoriesImplicits extends CommonRuntime {
     )
 
   implicit val tagRepositoryHandler: TagRepository[IO] =
-    new TagRepositoryHandler[IO]
+    (new TagRepositoryHandler).mapK(_.transact(transactor))
 
   implicit val todoListRepositoryHandler: TodoListRepository[IO] =
     new TodoListRepositoryHandler[IO]
