@@ -56,126 +56,44 @@ lazy val routeguide = project
 /////   SEED   /////
 ////////////////////
 
-//// Shared Modules ////
-
 lazy val `seed-config` = project
-  .in(file("seed/shared/modules/config"))
+  .in(file("seed/shared"))
   .settings(exampleSeedConfigSettings)
   .disablePlugins(SrcGenPlugin)
 
-////     Shared     ////
-
-lazy val allSharedModules: ProjectReference = `seed-config`
-
-lazy val `seed-shared` = project
-  .in(file("seed/shared"))
-  .aggregate(allSharedModules)
+lazy val `seed-protocol` = project
+  .in(file("seed/protocol"))
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2"), mu("mu-rpc-service")))
   .disablePlugins(SrcGenPlugin)
-
-//////////////////////////
-////  Server Modules  ////
-//////////////////////////
-
-lazy val `seed-server-common` = project
-  .in(file("seed/server/modules/common"))
-  .disablePlugins(SrcGenPlugin)
-
-lazy val `seed-server-protocol-avro` = project
-  .in(file("seed/server/modules/protocol_avro"))
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-service")))
-  .disablePlugins(SrcGenPlugin)
-
-lazy val `seed-server-protocol-proto` = project
-  .in(file("seed/server/modules/protocol_proto"))
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2")))
-  .disablePlugins(SrcGenPlugin)
-
-lazy val `seed-server-process` = project
-  .in(file("seed/server/modules/process"))
-  .settings(exampleSeedLogSettings)
-  .dependsOn(`seed-server-common`, `seed-server-protocol-avro`, `seed-server-protocol-proto`)
-  .disablePlugins(SrcGenPlugin)
-
-lazy val `seed-server-app` = project
-  .in(file("seed/server/modules/app"))
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
-  .dependsOn(`seed-server-process`, `seed-config`)
-  .disablePlugins(SrcGenPlugin)
-
-//////////////////////////
-////      Server      ////
-//////////////////////////
-
-lazy val allSeedServerModules: Seq[ProjectReference] = Seq(
-  `seed-server-common`,
-  `seed-server-protocol-avro`,
-  `seed-server-protocol-proto`,
-  `seed-server-process`,
-  `seed-server-app`
-)
 
 lazy val `seed-server` = project
   .in(file("seed/server"))
-  .aggregate(allSeedServerModules: _*)
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
+  .dependsOn(`seed-protocol`, `seed-config`)
+  .settings(exampleSeedLogSettings)
   .disablePlugins(SrcGenPlugin)
 
 addCommandAlias("runAvroServer", "seed-server/runMain example.seed.server.app.AvroServerApp")
 addCommandAlias("runProtoServer", "seed-server/runMain example.seed.server.app.ProtoServerApp")
 
-//////////////////////////
-////  Client Modules  ////
-//////////////////////////
-
-lazy val `seed-client-common` = project
-  .in(file("seed/client/modules/common"))
-  .disablePlugins(SrcGenPlugin)
-
-lazy val `seed-client-process` = project
-  .in(file("seed/client/modules/process"))
-  .settings(exampleSeedLogSettings)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-rpc-fs2")))
-  .dependsOn(
-    `seed-client-common`,
-    `seed-server-protocol-avro`,
-    `seed-server-protocol-proto`
-  )
-  .disablePlugins(SrcGenPlugin)
-
-lazy val `seed-client-app` = project
-  .in(file("seed/client/modules/app"))
-  .settings(exampleSeedClientAppSettings)
-  .dependsOn(`seed-client-process`, `seed-config`)
-  .disablePlugins(SrcGenPlugin)
-
-//////////////////////////
-////      Client      ////
-//////////////////////////
-
-lazy val allSeedClientModules: Seq[ProjectReference] = Seq(
-  `seed-client-common`,
-  `seed-client-process`,
-  `seed-client-app`
-)
-
 lazy val `seed-client` = project
   .in(file("seed/client"))
-  .aggregate(allSeedClientModules: _*)
+  .settings(exampleSeedClientAppSettings)
+  .settings(exampleSeedLogSettings)
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-rpc-fs2")))
+  .dependsOn(`seed-protocol`, `seed-config`)
   .disablePlugins(SrcGenPlugin)
 
 addCommandAlias("runAvroClient", "seed-client/runMain example.seed.client.app.AvroClientApp")
 addCommandAlias("runProtoClient", "seed-client/runMain example.seed.client.app.ProtoClientApp")
 
-// SEED root
-
-lazy val allSeedModules: Seq[ProjectReference] = Seq(
-  `seed-shared`,
-  `seed-client`,
-  `seed-server`
-)
-
 lazy val `seed` = project
   .in(file("seed"))
-  .aggregate(allSeedModules: _*)
+  .aggregate(
+    `seed-config`,
+    `seed-client`,
+    `seed-server`
+  ) 
   .disablePlugins(SrcGenPlugin)
 
 ////////////////////
