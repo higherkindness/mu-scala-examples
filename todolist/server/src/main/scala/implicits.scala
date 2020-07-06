@@ -20,14 +20,13 @@ import cats.effect.{Blocker, ContextShift, IO, Timer}
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import doobie.ConnectionIO
 import doobie.hikari.HikariTransactor
+import doobie.implicits._
 import examples.todolist.persistence.runtime._
 import examples.todolist.persistence._
 import examples.todolist.protocol.Protocols._
 import examples.todolist.runtime.CommonRuntime
 import examples.todolist.server.handlers._
 import java.util.Properties
-import doobie.util.transactor.Transactor
-import doobie.util.transactor
 
 sealed trait ServerImplicits extends RepositoriesImplicits {
 
@@ -82,13 +81,13 @@ sealed trait RepositoriesImplicits extends CommonRuntime {
     )
 
   implicit val tagRepositoryHandler: TagRepository[IO] =
-    (new TagRepositoryHandler).mapK(_.transact(transactor))
+    (new TagRepositoryHandler[ConnectionIO]).mapK(xa.trans)
 
   implicit val todoListRepositoryHandler: TodoListRepository[IO] =
-    new TodoListRepositoryHandler[IO]
+    (new TodoListRepositoryHandler[ConnectionIO]).mapK(xa.trans)
 
   implicit val todoItemRepositoryHandler: TodoItemRepository[IO] =
-    new TodoItemRepositoryHandler[IO]
+    (new TodoItemRepositoryHandler[ConnectionIO]).mapK(xa.trans)
 }
 
 object implicits extends ServerImplicits

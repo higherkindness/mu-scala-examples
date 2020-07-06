@@ -15,10 +15,11 @@
  */
 
 package examples.todolist.persistence
+import cats.~>
 
 import examples.todolist.TodoItem
 
-trait TodoItemRepository[F[_]] {
+trait TodoItemRepository[F[_]] { self =>
 
   def insert(item: TodoItem): F[Option[TodoItem]]
 
@@ -35,6 +36,24 @@ trait TodoItemRepository[F[_]] {
   def create: F[Int]
 
   def init: F[Int]
+
+  def mapK[G[_]](fk: F ~> G): TodoItemRepository[G] = new TodoItemRepository[G] {
+    def insert(item: TodoItem): G[Option[TodoItem]] = fk(self.insert(item))
+
+    def get(id: Int): G[Option[TodoItem]] = fk(self.get(id))
+
+    def delete(id: Int): G[Int] = fk(self.delete(id))
+
+    def update(input: TodoItem): G[Option[TodoItem]] = fk(self.update(input))
+
+    def list: G[List[TodoItem]] = fk(self.list)
+
+    def drop: G[Int] = fk(self.drop)
+
+    def create: G[Int] = fk(self.create)
+
+    def init: G[Int] = fk(self.init)
+  }
 }
 
 object TodoItemRepository {

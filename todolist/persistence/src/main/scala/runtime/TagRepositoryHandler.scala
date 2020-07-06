@@ -25,32 +25,32 @@ class TagRepositoryHandler[F[_]: Monad] extends TagRepository[ConnectionIO] {
 
   import examples.todolist.persistence.runtime.queries.TagQueries._
 
-  override def insert(input: Tag): ConnectionIO[Option[Tag]] =
+  def insert(input: Tag): ConnectionIO[Option[Tag]] =
     insertQuery(input)
       .withUniqueGeneratedKeys[Int]("id")
       .flatMap(getQuery(_).option)
 
-  override def get(id: Int): ConnectionIO[Option[Tag]] =
+  def get(id: Int): ConnectionIO[Option[Tag]] =
     getQuery(id).option
 
-  override def update(tag: Tag): ConnectionIO[Option[Tag]] =
+  def update(tag: Tag): ConnectionIO[Option[Tag]] =
     updateQuery(tag).run
       .flatMap(_ => getQuery(tag.id.get).option)
 
-  override def delete(id: Int): ConnectionIO[Int] =
+  def delete(id: Int): ConnectionIO[Int] =
     deleteQuery(id).run
 
-  override def list: ConnectionIO[List[Tag]] =
+  def list: ConnectionIO[List[Tag]] =
     listQuery
       .to[List]
 
-  override def drop: ConnectionIO[Int] =
+  def drop: ConnectionIO[Int] =
     dropQuery.run
 
-  override def create: ConnectionIO[Int] =
+  def create: ConnectionIO[Int] =
     createQuery.run
 
-  override def init: ConnectionIO[Int] =
+  def init: ConnectionIO[Int] =
     dropQuery.run
       .flatMap(drops =>
         createQuery.run
