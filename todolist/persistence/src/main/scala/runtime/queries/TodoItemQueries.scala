@@ -20,8 +20,11 @@ import doobie.implicits.toSqlInterpolator
 import doobie.util.query.Query0
 import doobie.util.update.Update0
 import examples.todolist.TodoItem
+import doobie.util.fragment.Fragment
 
 object TodoItemQueries {
+
+  private val selectFields: Fragment = fr"SELECT item, todo_list_id, completed, id FROM todo_items"
 
   def insertQuery(input: TodoItem): Update0 =
     sql"""
@@ -30,8 +33,7 @@ object TodoItemQueries {
        """.update
 
   def getQuery(id: Int): Query0[TodoItem] =
-    sql"""SELECT item, todo_list_id, completed, id FROM todo_items WHERE id = $id"""
-      .query[TodoItem]
+    (selectFields ++ fr"WHERE id = $id").query[TodoItem]
 
   def updateQuery(input: TodoItem): Update0 =
     sql"""
@@ -44,8 +46,7 @@ object TodoItemQueries {
     sql"""DELETE FROM todo_items WHERE id = $id""".update
 
   val listQuery: Query0[TodoItem] =
-    sql"""SELECT item, todo_list_id, completed, id FROM todo_items ORDER BY id ASC"""
-      .query[TodoItem]
+    (selectFields ++ fr"ORDER BY id ASC").query[TodoItem]
 
   val dropQuery: Update0 =
     sql"""DROP TABLE todo_items IF EXISTS""".update
