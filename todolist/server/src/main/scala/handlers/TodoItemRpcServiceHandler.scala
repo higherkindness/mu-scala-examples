@@ -48,7 +48,7 @@ class TodoItemRpcServiceHandler[F[_]: Sync](implicit repo: TodoItemRepository[F]
     for {
       _            <- L.debug(s"Trying to insert a $model")
       insertedItem <- repo.insert(item.toTodoItem)
-      _            <- L.info(s"Tried to add a $model")
+      _            <- L.info(s"$model inserted")
     } yield TodoItemResponse(insertedItem.flatMap(_.toTodoItemMessage))
 
   override def retrieve(id: MessageId): F[TodoItemResponse] =
