@@ -57,7 +57,7 @@ lazy val routeguide = project
 ////////////////////
 
 lazy val `seed-config` = project
-  .in(file("seed/shared"))
+  .in(file("seed/config"))
   .settings(exampleSeedConfigSettings)
   .disablePlugins(SrcGenPlugin)
 
@@ -78,19 +78,19 @@ addCommandAlias("runProtoServer", "seed-server/runMain example.seed.server.app.P
 
 lazy val `seed-client` = project
   .in(file("seed/client"))
-  .settings(exampleSeedClientAppSettings)
-  .settings(exampleSeedLogSettings)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-rpc-fs2")))
   .dependsOn(`seed-protocol`, `seed-config`)
+  .settings(exampleSeedClientAppSettings)
+  .settings(exampleSeedLogSettings)
   .disablePlugins(SrcGenPlugin)
 
 addCommandAlias("runAvroClient", "seed-client/runMain example.seed.client.app.AvroClientApp")
 addCommandAlias("runProtoClient", "seed-client/runMain example.seed.client.app.ProtoClientApp")
 
-lazy val `seed` = project
-  .in(file("seed"))
+lazy val seed = project
   .aggregate(
     `seed-config`,
+    `seed-protocol`,
     `seed-client`,
     `seed-server`
   ) 

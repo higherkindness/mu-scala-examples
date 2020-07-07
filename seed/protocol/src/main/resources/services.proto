@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package example.seed.protocol.proto;
+
+import "people.proto";
+
+service PeopleService {
+
+  rpc getPerson (example.seed.protocol.proto.PeopleRequest) returns (example.seed.protocol.proto.PeopleResponse);
+  rpc getPersonStream (stream example.seed.protocol.proto.PeopleRequest) returns (stream example.seed.protocol.proto.PeopleResponse);
+
+}
