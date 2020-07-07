@@ -87,8 +87,7 @@ lazy val `seed-client` = project
 addCommandAlias("runAvroClient", "seed-client/runMain example.seed.client.app.AvroClientApp")
 addCommandAlias("runProtoClient", "seed-client/runMain example.seed.client.app.ProtoClientApp")
 
-lazy val `seed` = project
-  .in(file("seed"))
+lazy val seed = project
   .aggregate(
     `seed-config`,
     `seed-protocol`,
