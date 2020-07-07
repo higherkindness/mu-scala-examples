@@ -28,7 +28,6 @@ import examples.todolist.runtime.CommonRuntime
 import examples.todolist.server.handlers._
 import java.util.Properties
 import cats.effect.Resource
-import doobie.free.Embedded.Connection
 
 sealed trait ServerImplicits extends RepositoriesImplicits {
 
@@ -51,46 +50,55 @@ sealed trait RepositoriesImplicits extends CommonRuntime {
   implicit val cs: ContextShift[IO] = IO.contextShift(EC)
   implicit val bl: Blocker          = Blocker.liftExecutionContext(EC)
 
-  implicit val ya: Resource[IO, HikariTransactor[IO]] = HikariTransactor.newHikariTransactor[IO](
-    "org.h2.Driver",
-    "jdbc:h2:mem:todo",
-    "sa",
-    "",
-    EC,
-    bl
-  )
-  // implicit val xa: HikariTransactor[IO] =
-  //   HikariTransactor[IO](
-  //     new HikariDataSource(
-  //       new HikariConfig(
-  //         new Properties {
-  //           setProperty("driverClassName", "org.h2.Driver")
-  //           setProperty("jdbcUrl", "jdbc:h2:mem:todo")
-  //           setProperty("username", "sa")
-  //           setProperty("password", "")
-  //           setProperty("maximumPoolSize", "10")
-  //           setProperty("minimumIdle", "10")
-  //           setProperty("idleTimeout", "600000")
-  //           setProperty("connectionTimeout", "30000")
-  //           setProperty("connectionTestQuery", "SELECT 1")
-  //           setProperty("maxLifetime", "1800000")
-  //           setProperty("autoCommit", "true")
-  //         }
-  //       )
-  //     ),
-  //     EC,
-  //     bl
-  //   )
-  val transactor = ya.use { xa => 
-    implicit val tagRepositoryHandler: TagRepository[IO] =
-      (new TagRepositoryHandler[ConnectionIO]).mapK(xa.trans)
+  // implicit val ya: Resource[IO, HikariTransactor[IO]] = HikariTransactor.newHikariTransactor[IO](
+  //   "org.h2.Driver",
+  //   "jdbc:h2:mem:todo",
+  //   "sa",
+  //   "",
+  //   EC,
+  //   bl
+  // )
+  private val xa: HikariTransactor[IO] =
+    HikariTransactor[IO](
+      new HikariDataSource(
+        new HikariConfig(
+          new Properties {
+            setProperty("driverClassName", "org.h2.Driver")
+            setProperty("jdbcUrl", "jdbc:h2:mem:todo")
+            setProperty("username", "sa")
+            setProperty("password", "")
+            setProperty("maximumPoolSize", "10")
+            setProperty("minimumIdle", "10")
+            setProperty("idleTimeout", "600000")
+            setProperty("connectionTimeout", "30000")
+            setProperty("connectionTestQuery", "SELECT 1")
+            setProperty("maxLifetime", "1800000")
+            setProperty("autoCommit", "true")
+          }
+        )
+      ),
+      EC,
+      bl
+    )
+  // val transactor = ya.use { xa =>
+  //   implicit val tagRepositoryHandler: TagRepository[IO] =
+  //     (new TagRepositoryHandler[ConnectionIO]).mapK(xa.trans)
 
-    implicit val todoListRepositoryHandler: TodoListRepository[IO] =
-      (new TodoListRepositoryHandler[ConnectionIO]).mapK(xa.trans)
+  //   implicit val todoListRepositoryHandler: TodoListRepository[IO] =
+  //     (new TodoListRepositoryHandler[ConnectionIO]).mapK(xa.trans)
 
-    implicit val todoItemRepositoryHandler: TodoItemRepository[IO] =
-      (new TodoItemRepositoryHandler[ConnectionIO]).mapK(xa.trans)
-  }
+  //   implicit val todoItemRepositoryHandler: TodoItemRepository[IO] =
+  //     (new TodoItemRepositoryHandler[ConnectionIO]).mapK(xa.trans)
+  // }
+
+  implicit val tagRepositoryHandler: TagRepository[IO] =
+    (new TagRepositoryHandler[ConnectionIO]).mapK(xa.trans)
+
+  implicit val todoListRepositoryHandler: TodoListRepository[IO] =
+    (new TodoListRepositoryHandler[ConnectionIO]).mapK(xa.trans)
+
+  implicit val todoItemRepositoryHandler: TodoItemRepository[IO] =
+    (new TodoItemRepositoryHandler[ConnectionIO]).mapK(xa.trans)
 
 }
 
