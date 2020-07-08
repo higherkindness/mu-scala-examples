@@ -31,8 +31,6 @@ Running the client:
 sbt runProtoClient
 ```
 
-(TODO INCLUDE THE RUN COMMANDS FROM THE BUILD.SBT?)
-
 [comment]: # (Start Copyright)
 # Copyright
 
