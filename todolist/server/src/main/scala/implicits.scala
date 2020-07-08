@@ -27,7 +27,6 @@ import examples.todolist.protocol.Protocols._
 import examples.todolist.runtime.CommonRuntime
 import examples.todolist.server.handlers._
 import java.util.Properties
-import cats.effect.Resource
 
 sealed trait ServerImplicits extends RepositoriesImplicits {
 
@@ -50,14 +49,6 @@ sealed trait RepositoriesImplicits extends CommonRuntime {
   implicit val cs: ContextShift[IO] = IO.contextShift(EC)
   implicit val bl: Blocker          = Blocker.liftExecutionContext(EC)
 
-  // implicit val ya: Resource[IO, HikariTransactor[IO]] = HikariTransactor.newHikariTransactor[IO](
-  //   "org.h2.Driver",
-  //   "jdbc:h2:mem:todo",
-  //   "sa",
-  //   "",
-  //   EC,
-  //   bl
-  // )
   private val xa: HikariTransactor[IO] =
     HikariTransactor[IO](
       new HikariDataSource(
@@ -80,16 +71,6 @@ sealed trait RepositoriesImplicits extends CommonRuntime {
       EC,
       bl
     )
-  // val transactor = ya.use { xa =>
-  //   implicit val tagRepositoryHandler: TagRepository[IO] =
-  //     (new TagRepositoryHandler[ConnectionIO]).mapK(xa.trans)
-
-  //   implicit val todoListRepositoryHandler: TodoListRepository[IO] =
-  //     (new TodoListRepositoryHandler[ConnectionIO]).mapK(xa.trans)
-
-  //   implicit val todoItemRepositoryHandler: TodoItemRepository[IO] =
-  //     (new TodoItemRepositoryHandler[ConnectionIO]).mapK(xa.trans)
-  // }
 
   implicit val tagRepositoryHandler: TagRepository[IO] =
     (new TagRepositoryHandler[ConnectionIO]).mapK(xa.trans)
