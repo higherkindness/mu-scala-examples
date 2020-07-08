@@ -18,9 +18,9 @@ package examples.todolist.client
 
 package handlers
 
+import cats.effect.{Resource, Sync}
 import cats.syntax.flatMap._
 import cats.syntax.functor._
-import cats.effect.{Resource, Sync}
 import examples.todolist.client.clients.TagClient
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._

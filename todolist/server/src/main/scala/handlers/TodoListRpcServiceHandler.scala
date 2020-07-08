@@ -17,47 +17,67 @@
 package examples.todolist.server
 package handlers
 
-import cats.Monad
-import cats.syntax.functor._
+import cats.effect.Sync
 import cats.syntax.option._
+import cats.syntax.functor._
+import cats.syntax.flatMap._
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
-import examples.todolist.service.TodoListService
 import examples.todolist.TodoList
+import examples.todolist.persistence.TodoListRepository
 import higherkindness.mu.rpc.protocol.Empty
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
-class TodoListRpcServiceHandler[F[_]](implicit M: Monad[F], service: TodoListService[F])
+class TodoListRpcServiceHandler[F[_]: Sync](implicit repo: TodoListRepository[F])
     extends TodoListRpcService[F] {
 
   import TodoListConversions._
 
+  val L: Logger[F]  = Slf4jLogger.getLogger[F]
+  val model: String = classOf[TodoList].getSimpleName
+
   override def reset(empty: Empty.type): F[MessageId] =
-    service.reset.map(MessageId)
+    for {
+      _   <- L.debug(s"Trying to reset $model in repository")
+      ops <- repo.init
+      _   <- L.warn(s"Reset $model table in repository")
+    } yield MessageId(ops)
 
   override def insert(item: TodoListRequest): F[TodoListResponse] =
-    service
-      .insert(item.toTodoList)
-      .map(_.toTodoList)
+    for {
+      _            <- L.debug(s"Trying to insert a $model")
+      insertedItem <- repo.insert(item.toTodoList)
+      _            <- L.info(s"Tried to add a $model")
+    } yield insertedItem.toTodoList
 
   override def retrieve(id: MessageId): F[TodoListResponse] =
-    service
-      .retrieve(id.value)
-      .map(_.toTodoList)
+    for {
+      _    <- L.debug(s"Trying to retrieve a $model")
+      item <- repo.get(id.value)
+      _    <- L.info(s"Found ${item}")
+    } yield item.toTodoList
 
   override def list(empty: Empty.type): F[TodoListList] =
-    service.list
-      .map(_.flatMap(_.toTodoListMessage))
-      .map(TodoListList)
+    for {
+      _     <- L.debug(s"Trying to get all $model models")
+      items <- repo.list
+      _     <- L.info(s"Found all $model models")
+    } yield TodoListList(items.flatMap(_.toTodoListMessage))
 
   override def update(item: TodoListMessage): F[TodoListResponse] =
-    service
-      .update(item.toTodoList)
-      .map(_.toTodoList)
+    for {
+      _           <- L.debug(s"Trying to update a $model")
+      updatedItem <- repo.update(item.toTodoList)
+      _           <- L.info(s"Tried to update a $model")
+    } yield updatedItem.toTodoList
 
   override def destroy(id: MessageId): F[MessageId] =
-    service
-      .destroy(id.value)
-      .map(MessageId)
+    for {
+      _           <- L.debug(s"Trying to destroy a $model")
+      deletedItem <- repo.delete(id.value)
+      _           <- L.info(s"Tried to delete $model")
+    } yield MessageId(deletedItem)
 }
 
 object TodoListConversions {

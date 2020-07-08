@@ -22,7 +22,7 @@ object ProjectPlugin extends AutoPlugin {
     lazy val V = new {
       val catsEffect: String    = "2.1.3"
       val circe: String         = "0.13.0"
-      val frees: String         = "0.8.2"
+      val doobie: String        = "0.9.0"
       val fs2: String           = "2.3.0"
       val kindProjector: String = "0.11.0"
       val log4cats: String      = "1.0.1"
@@ -122,10 +122,12 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val exampleTodolistCommonSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
-        "io.frees"       %% "frees-todolist-lib" % V.frees,
+        "org.tpolecat"      %% "doobie-core"    % V.doobie,
+        "org.tpolecat"      %% "doobie-h2"      % V.doobie,
+        "org.tpolecat"      %% "doobie-hikari"  % V.doobie,
         "io.chrisdavenport" %% "log4cats-core"  % V.log4cats,
         "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
-        "ch.qos.logback" % "logback-classic"     % V.logback
+        "ch.qos.logback"    % "logback-classic" % V.logback
       )
     )
 

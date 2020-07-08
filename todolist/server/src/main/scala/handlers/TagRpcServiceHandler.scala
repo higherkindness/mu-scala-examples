@@ -17,49 +17,65 @@
 package examples.todolist.server
 package handlers
 
-import cats.Monad
+import cats.effect.Sync
 import cats.syntax.functor._
+import cats.syntax.flatMap._
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
-import examples.todolist.service.TagService
 import examples.todolist.Tag
+import examples.todolist.persistence.TagRepository
 import higherkindness.mu.rpc.protocol.Empty
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
-class TagRpcServiceHandler[F[_]](implicit M: Monad[F], service: TagService[F])
-    extends TagRpcService[F] {
+class TagRpcServiceHandler[F[_]: Sync](implicit repo: TagRepository[F]) extends TagRpcService[F] {
 
   import TagConversions._
 
-  def reset(empty: Empty.type): F[MessageId] =
-    service.reset.map(MessageId)
+  val L: Logger[F]  = Slf4jLogger.getLogger[F]
+  val model: String = classOf[Tag].getSimpleName
 
-  def insert(tagRequest: TagRequest): F[TagResponse] =
-    service
-      .insert(tagRequest.toTag)
-      .map(_.flatMap(_.toTagMessage))
-      .map(TagResponse)
+  override def reset(empty: Empty.type): F[MessageId] =
+    for {
+      _     <- L.debug(s"Trying to reset $model in repository")
+      items <- repo.init
+      _     <- L.warn(s"Reset $model table in repository")
+    } yield MessageId(items)
 
-  def retrieve(id: MessageId): F[TagResponse] =
-    service
-      .retrieve(id.value)
-      .map(_.flatMap(_.toTagMessage))
-      .map(TagResponse)
+  override def insert(tagRequest: TagRequest): F[TagResponse] =
+    for {
+      _            <- L.debug(s"Trying to insert a $model")
+      insertedItem <- repo.insert(tagRequest.toTag)
+      _            <- L.info(s"Tried to add $model")
+    } yield TagResponse(insertedItem.flatMap(_.toTagMessage))
 
-  def list(empty: Empty.type): F[TagList] =
-    service.list
-      .map(_.flatMap(_.toTagMessage))
-      .map(TagList)
+  override def retrieve(id: MessageId): F[TagResponse] =
+    for {
+      _    <- L.debug(s"Trying to retrieve a $model")
+      item <- repo.get(id.value)
+      _    <- L.info(s"Found $model: $item")
+    } yield TagResponse(item.flatMap(_.toTagMessage))
 
-  def update(tag: TagMessage): F[TagResponse] =
-    service
-      .update(tag.toTag)
-      .map(_.flatMap(_.toTagMessage))
-      .map(TagResponse)
+  override def list(empty: Empty.type): F[TagList] =
+    for {
+      _     <- L.debug(s"Trying to get all $model models")
+      items <- repo.list
+      _     <- L.info(s"Found all $model models")
+    } yield TagList(items.flatMap(_.toTagMessage))
 
-  def destroy(id: MessageId): F[MessageId] =
-    service
-      .destroy(id.value)
-      .map(MessageId)
+  override def update(tag: TagMessage): F[TagResponse] =
+    for {
+      _           <- L.debug(s"Trying to update a $model")
+      updatedItem <- repo.update(tag.toTag)
+      _           <- L.info(s"Tried to update $model")
+    } yield TagResponse(updatedItem.flatMap(_.toTagMessage))
+
+  override def destroy(id: MessageId): F[MessageId] =
+    for {
+      _            <- L.debug(s"Trying to delete a $model")
+      deletedItems <- repo.delete(id.value)
+      _            <- L.info(s"Tried to delete $model")
+    } yield MessageId(deletedItems)
 }
 
 object TagConversions {
