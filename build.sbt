@@ -60,10 +60,21 @@ lazy val `seed-config` = project
   .in(file("seed/config"))
   .settings(exampleSeedConfigSettings)
 
-lazy val `seed-protocol` = project
-  .in(file("seed/protocol"))
+lazy val `seed-avro-protocol` = project
+  .in(file("seed/protocol/avro"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2"), mu("mu-rpc-service")))
-  .settings(exampleSeedProtocolSettings)
+  .settings(exampleSeedAvroProtocolSettings)
+
+lazy val `seed-protobuf-protocol` = project
+  .in(file("seed/protocol/proto"))
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2"), mu("mu-rpc-service")))
+  .settings(exampleSeedProtobufProtocolSettings)
+
+lazy val `seed-protocol` = project
+   .aggregate(
+    `seed-protobuf-protocol`,
+    `seed-avro-protocol`,
+  )
 
 lazy val `seed-server` = project
   .in(file("seed/server"))
