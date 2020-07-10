@@ -59,19 +59,17 @@ lazy val routeguide = project
 lazy val `seed-config` = project
   .in(file("seed/config"))
   .settings(exampleSeedConfigSettings)
-  .disablePlugins(SrcGenPlugin)
 
 lazy val `seed-protocol` = project
   .in(file("seed/protocol"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2"), mu("mu-rpc-service")))
-  .disablePlugins(SrcGenPlugin)
+  .settings(exampleSeedProtocolSettings)
 
 lazy val `seed-server` = project
   .in(file("seed/server"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
   .dependsOn(`seed-protocol`, `seed-config`)
   .settings(exampleSeedLogSettings)
-  .disablePlugins(SrcGenPlugin)
 
 addCommandAlias("runAvroServer", "seed-server/runMain example.seed.server.app.AvroServerApp")
 addCommandAlias("runProtoServer", "seed-server/runMain example.seed.server.app.ProtoServerApp")

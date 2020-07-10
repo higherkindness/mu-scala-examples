@@ -12,6 +12,6 @@ message PeopleRequest {
 }
 
 message PeopleResponse {
-   required Person person = 1;
+  required Person person = 1;
 }
 
