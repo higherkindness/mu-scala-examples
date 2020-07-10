@@ -18,7 +18,7 @@ package example.routeguide.client.io
 
 import cats.effect.{IO, Resource}
 import example.routeguide.client.handlers.RouteGuideClientHandler
-import example.routeguide.protocol.Protocols._
+import example.routeguide.protocol.service._
 import example.routeguide.runtime._
 import example.routeguide.client.runtime._
 

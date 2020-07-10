@@ -89,6 +89,11 @@ object ProjectPlugin extends AutoPlugin {
       )
     )
 
+    lazy val exampleRouteguideProtocolSettings: Seq[Def.Setting[_]] = Seq(
+      muSrcGenIdlType := IdlType.Proto,
+      muSrcGenIdiomaticEndpoints := true
+    )
+
     lazy val exampleRouteguideCommonSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
         "io.circe"       %% "circe-core"     % V.circe,

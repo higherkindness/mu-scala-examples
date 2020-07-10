@@ -18,7 +18,7 @@ package example.routeguide.client.task
 
 import cats.effect.Resource
 import example.routeguide.client.handlers.RouteGuideClientHandler
-import example.routeguide.protocol.Protocols._
+import example.routeguide.protocol.service._
 import example.routeguide.runtime._
 import example.routeguide.client.runtime._
 import monix.eval.Task

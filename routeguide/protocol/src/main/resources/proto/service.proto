@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-package routeguide;
+package example.routeguide.protocol;
 
 option java_multiple_files = true;
 option java_package = "io.grpc.examples.routeguide";
@@ -43,8 +43,8 @@ message RouteSummary {
 }
 
 service RouteGuideService {
-  rpc GetFeature (Point) returns (Feature);
-  rpc ListFeatures (Rectangle) returns (stream Feature);
-  rpc RecordRoute (stream Point) returns (RouteSummary);
-  rpc RouteChat (stream RouteNote) returns (stream RouteNote);
+  rpc getFeature (Point) returns (Feature);
+  rpc listFeatures (Rectangle) returns (stream Feature);
+  rpc recordRoute (stream Point) returns (RouteSummary);
+  rpc routeChat (stream RouteNote) returns (stream RouteNote);
 }
