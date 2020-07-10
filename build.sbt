@@ -70,16 +70,10 @@ lazy val `seed-protobuf-protocol` = project
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2"), mu("mu-rpc-service")))
   .settings(exampleSeedProtobufProtocolSettings)
 
-lazy val `seed-protocol` = project
-   .aggregate(
-    `seed-protobuf-protocol`,
-    `seed-avro-protocol`,
-  )
-
 lazy val `seed-server` = project
   .in(file("seed/server"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
-  .dependsOn(`seed-protocol`, `seed-config`)
+  .dependsOn(`seed-avro-protocol`, `seed-protobuf-protocol`, `seed-config`)
   .settings(exampleSeedLogSettings)
 
 addCommandAlias("runAvroServer", "seed-server/runMain example.seed.server.app.AvroServerApp")
@@ -88,7 +82,7 @@ addCommandAlias("runProtoServer", "seed-server/runMain example.seed.server.app.P
 lazy val `seed-client` = project
   .in(file("seed/client"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-rpc-fs2")))
-  .dependsOn(`seed-protocol`, `seed-config`)
+  .dependsOn(`seed-avro-protocol`, `seed-protobuf-protocol`, `seed-config`)
   .settings(exampleSeedClientAppSettings)
   .settings(exampleSeedLogSettings)
   .disablePlugins(SrcGenPlugin)
@@ -99,7 +93,8 @@ addCommandAlias("runProtoClient", "seed-client/runMain example.seed.client.app.P
 lazy val seed = project
   .aggregate(
     `seed-config`,
-    `seed-protocol`,
+    `seed-avro-protocol`,
+    `seed-protobuf-protocol`,
     `seed-client`,
     `seed-server`
   ) 

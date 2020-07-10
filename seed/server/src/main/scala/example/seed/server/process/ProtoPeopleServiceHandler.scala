@@ -32,12 +32,12 @@ class ProtoPeopleServiceHandler[F[_]: Timer](implicit F: Sync[F], L: Logger[F])
   val serviceName = "ProtoPeopleService"
 
   def getPerson(request: PeopleRequest): F[PeopleResponse] =
-    L.info(s"$serviceName - Request: $request").as(PeopleResponse(Person(request.name, 10)))
+    L.info(s"$serviceName - Request: $request").as(PeopleResponse(Option(Person(request.name, 10))))
 
   def getPersonStream(request: Stream[F, PeopleRequest]): F[Stream[F, PeopleResponse]] = {
 
     def responseStream(person: PeopleRequest): Stream[F, PeopleResponse] = {
-      val response = PeopleResponse(Person(person.name, 10))
+      val response = PeopleResponse(Option(Person(person.name, 10)))
       Stream
         .awakeEvery[F](2.seconds)
         .evalMap(_ =>
