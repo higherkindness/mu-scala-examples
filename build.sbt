@@ -2,11 +2,6 @@
 //// ROUTEGUIDE ////
 ////////////////////
 
-// lazy val `routeguide-protobuf-protocol` = project
-//   .in(file("routeguide/protocol/src/main/resources/proto"))
-//   .settings(libraryDependencies ++= Seq(mu("mu-rpc-monix")))
-//   .settings(exampleRouteguideProtocolSettings)
-
 lazy val `routeguide-protocol` = project
   .in(file("routeguide/protocol"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-monix"), mu("mu-rpc-fs2")))
@@ -50,7 +45,6 @@ lazy val `routeguide-client` = project
 
 lazy val routeguide = project
   .aggregate(
-    // `routeguide-protobuf-protocol`,
     `routeguide-protocol`,
     `routeguide-runtime`,
     `routeguide-common`,
