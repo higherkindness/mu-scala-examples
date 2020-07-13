@@ -22,7 +22,6 @@ import java.util.function.UnaryOperator
 import cats.syntax.applicative._
 import cats.effect.{Async, ConcurrentEffect, Effect}
 import example.routeguide.protocol.service._
-import fs2.Stream
 import example.routeguide.common.Utils._
 import monix.eval.Task
 import monix.reactive.Observable
@@ -45,13 +44,13 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
       point.findFeatureIn(features)
     }
 
-  override def listFeatures(rectangle: Rectangle): F[Stream[Feature]] = {
+  override def listFeatures(rectangle: Rectangle): F[Observable[Feature]] = {
     val left   = Math.min(rectangle.lo.get.longitude, rectangle.hi.get.longitude)
     val right  = Math.max(rectangle.lo.get.longitude, rectangle.hi.get.longitude)
     val top    = Math.max(rectangle.lo.get.latitude, rectangle.hi.get.latitude)
     val bottom = Math.min(rectangle.lo.get.latitude, rectangle.hi.get.latitude)
 
-    val observable = Stream.fromIterable(
+    val observable = Observable.fromIterable(
       features.filter { feature =>
         val lat = feature.location.get.latitude
         val lon = feature.location.get.longitude
