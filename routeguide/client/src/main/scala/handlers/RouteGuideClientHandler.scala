@@ -42,8 +42,8 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
         .use(_.getFeature(Point(lat, lon)))
         .map { feature: Feature =>
           if (feature.valid)
-            logger.info(s"Found feature called '${feature.name}' at ${feature.location.get.pretty}")
-          else logger.info(s"Found no feature at ${feature.location.get.pretty}")
+            logger.info(s"Found feature called '${feature.name}' at ${feature.location.fold("no location found, actually")(_.pretty)}")
+          else logger.info(s"Found no feature at ${feature.location.fold("no location found, either")(_.pretty)}")
         }
         .handleErrorWith {
           case e: StatusRuntimeException =>
@@ -88,7 +88,7 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
 
     val points = takeN.map(_.location)
     Async[F].delay(
-      logger.info(s"*** RecordRoute. Points: ${points.map(_.get.pretty).mkString(";")}")
+      logger.info(s"*** RecordRoute. Points: ${points.map(_.fold("no points found")(_.pretty)).mkString(";")}")
     ) *>
       client
         .use(
