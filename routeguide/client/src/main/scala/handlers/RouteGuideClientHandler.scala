@@ -130,7 +130,7 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
                   .map { routeNote =>
                     logger.info(
                       s"Sending message '${routeNote.message}' at " +
-                        s"${routeNote.location.get.latitude}, ${routeNote.location.get.longitude}"
+                        s"${routeNote.location.fold(0)(_.latitude)}, ${routeNote.location.fold(0)(_.longitude)}"
                     )
                     routeNote
                   }
@@ -140,7 +140,7 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
             .map { note: RouteNote =>
               logger.info(
                 s"Got message '${note.message}' at " +
-                  s"${note.location.get.latitude}, ${note.location.get.longitude}"
+                  s"${note.location.fold(0)(_.latitude)}, ${note.location.fold(0)(_.longitude)}"
               )
             }
             .onErrorHandle {
