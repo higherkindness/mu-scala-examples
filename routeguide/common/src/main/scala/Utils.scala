@@ -67,7 +67,7 @@ object Utils {
     def findFeatureIn(features: List[Feature]): Feature =
       features
         .find(f =>
-          f.location.get.latitude == location.latitude && f.location.get.longitude == location.longitude
+          f.location.fold(0)(_.latitude) == location.latitude && f.location.fold(0)(_.longitude) == location.longitude
         )
         .getOrElse(Feature(name = "", location = Option(location)))
 
