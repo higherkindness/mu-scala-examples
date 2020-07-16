@@ -93,7 +93,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
         logger.info(s"Got route note $note, adding it... ")
 
         addNote(note)
-        Observable.fromIterable(getOrCreateNotes(note.location.get))
+        Observable.fromIterable(getOrCreateNotes(note.location.getOrElse(Point(0, 0))))
       }
       .onErrorHandle { e =>
         logger.warn(s"routeChat cancelled $e")
@@ -104,8 +104,8 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
   private[this] def addNote(note: RouteNote): Map[Point, List[RouteNote]] =
     routeNotes.updateAndGet(new UnaryOperator[Map[Point, List[RouteNote]]] {
       override def apply(notes: Map[Point, List[RouteNote]]): Map[Point, List[RouteNote]] = {
-        val newRouteNotes = notes.getOrElse(note.location.get, Nil) :+ note
-        notes + (note.location.get -> newRouteNotes)
+        val newRouteNotes = notes.getOrElse(note.location.getOrElse(Point(0,0)), Nil) :+ note
+        notes + (note.location.getOrElse(Point(0,0)) -> newRouteNotes)
       }
     })
 

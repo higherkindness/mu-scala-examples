@@ -100,7 +100,7 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
         .use(
           _.recordRoute(
             Observable
-              .fromIterable(points.map(_.get))
+              .fromIterable(points.map(_.getOrElse(Point(0, 0))))
               .delayOnNext(500.milliseconds)
           )
         )
