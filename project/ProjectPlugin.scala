@@ -121,10 +121,6 @@ object ProjectPlugin extends AutoPlugin {
     )
 
     lazy val exampleSeedProtobufProtocolSettings: Seq[Def.Setting[_]] = Seq(
-      libraryDependencies ++= Seq(
-         mu("mu-rpc-fs2"), 
-         mu("mu-rpc-service")
-      ),
       muSrcGenIdlType := IdlType.Proto,
       muSrcGenIdiomaticEndpoints := true
     )
