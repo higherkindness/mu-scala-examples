@@ -66,7 +66,7 @@ lazy val `seed-avro-protocol` = project
 
 lazy val `seed-protobuf-protocol` = project
   .in(file("seed/protocol/proto"))
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2"), mu("mu-rpc-service")))
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2")))
   .settings(exampleSeedProtobufProtocolSettings)
 
 lazy val `seed-server` = project
