@@ -45,15 +45,15 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
     }
 
   override def listFeatures(rectangle: Rectangle): F[Observable[Feature]] = {
-    val left   = Math.min(rectangle.lo.get.longitude, rectangle.hi.get.longitude)
-    val right  = Math.max(rectangle.lo.get.longitude, rectangle.hi.get.longitude)
-    val top    = Math.max(rectangle.lo.get.latitude, rectangle.hi.get.latitude)
-    val bottom = Math.min(rectangle.lo.get.latitude, rectangle.hi.get.latitude)
+    val left   = Math.min(rectangle.lo.fold(0)(_.longitude), rectangle.hi.fold(0)(_.longitude))
+    val right  = Math.max(rectangle.lo.fold(0)(_.longitude), rectangle.hi.fold(0)(_.longitude))
+    val top    = Math.max(rectangle.lo.fold(0)(_.latitude), rectangle.hi.fold(0)(_.latitude))
+    val bottom = Math.min(rectangle.lo.fold(0)(_.latitude), rectangle.hi.fold(0)(_.latitude))
 
     val observable = Observable.fromIterable(
       features.filter { feature =>
-        val lat = feature.location.get.latitude
-        val lon = feature.location.get.longitude
+        val lat = feature.location.fold(0)(_.latitude)
+        val lon = feature.location.fold(0)(_.longitude)
         feature.valid && lon >= left && lon <= right && lat >= bottom && lat <= top
 
       }

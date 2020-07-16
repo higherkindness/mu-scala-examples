@@ -4,7 +4,7 @@
 
 lazy val `routeguide-protocol` = project
   .in(file("routeguide/protocol"))
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-monix"), mu("mu-rpc-fs2")))
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-monix")))
   .settings(exampleRouteguideProtocolSettings)
 
 lazy val `routeguide-runtime` = project
