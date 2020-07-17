@@ -54,7 +54,7 @@ object ProtoPeopleServiceClient {
           _      <- L.info(s"")
           result <- client.getPerson(PeopleRequest(name))
           _      <- L.info(s"$serviceName - Request: $name - Result: $result")
-        } yield result.person.get
+        } yield result.person.getOrElse(Person("default", 0))
 
       def getRandomPersonStream: Stream[F, Person] = {
 

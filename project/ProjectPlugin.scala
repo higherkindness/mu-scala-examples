@@ -131,7 +131,6 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val exampleSeedAvroProtocolSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
-         mu("mu-rpc-fs2"), 
          mu("mu-rpc-service")
       ),
       muSrcGenIdlType := IdlType.Avro,
