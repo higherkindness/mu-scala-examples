@@ -28,6 +28,7 @@ import monix.reactive.Observable
 import org.log4s._
 
 import scala.concurrent.duration.NANOSECONDS
+import example.routeguide.common.PointNotFoundError
 
 class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
     extends RouteGuideService[F] {
@@ -45,15 +46,15 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
     }
 
   override def listFeatures(rectangle: Rectangle): F[Observable[Feature]] = {
-    val left   = Math.min(rectangle.lo.fold(0)(_.longitude), rectangle.hi.fold(0)(_.longitude))
-    val right  = Math.max(rectangle.lo.fold(0)(_.longitude), rectangle.hi.fold(0)(_.longitude))
-    val top    = Math.max(rectangle.lo.fold(0)(_.latitude), rectangle.hi.fold(0)(_.latitude))
-    val bottom = Math.min(rectangle.lo.fold(0)(_.latitude), rectangle.hi.fold(0)(_.latitude))
+    val left   = Math.min(rectangle.lo.getOrElse(throw new PointNotFoundError("rectangle lo not found")).longitude, rectangle.hi.getOrElse(throw new PointNotFoundError("rectangle hi not found")).longitude)
+    val right  = Math.max(rectangle.lo.getOrElse(throw new PointNotFoundError("rectangle lo not found")).longitude, rectangle.hi.getOrElse(throw new PointNotFoundError("rectangle hi not found")).longitude)
+    val top    = Math.max(rectangle.lo.getOrElse(throw new PointNotFoundError("rectangle lo not found")).latitude, rectangle.hi.getOrElse(throw new PointNotFoundError("rectangle hi not found")).latitude)
+    val bottom = Math.min(rectangle.lo.getOrElse(throw new PointNotFoundError("rectangle lo not found")).latitude, rectangle.hi.getOrElse(throw new PointNotFoundError("rectangle hi not found")).latitude)
 
     val observable = Observable.fromIterable(
       features.filter { feature =>
-        val lat = feature.location.fold(0)(_.latitude)
-        val lon = feature.location.fold(0)(_.longitude)
+        val lat = feature.location.getOrElse(throw new PointNotFoundError("location not found")).latitude
+        val lon = feature.location.getOrElse(throw new PointNotFoundError("location not found")).longitude
         feature.valid && lon >= left && lon <= right && lat >= bottom && lat <= top
 
       }
@@ -93,7 +94,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
         logger.info(s"Got route note $note, adding it... ")
 
         addNote(note)
-        Observable.fromIterable(getOrCreateNotes(note.location.getOrElse(Point(0, 0))))
+        Observable.fromIterable(getOrCreateNotes(note.location.getOrElse(throw new PointNotFoundError("location not found"))))
       }
       .onErrorHandle { e =>
         logger.warn(s"routeChat cancelled $e")
@@ -104,8 +105,8 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
   private[this] def addNote(note: RouteNote): Map[Point, List[RouteNote]] =
     routeNotes.updateAndGet(new UnaryOperator[Map[Point, List[RouteNote]]] {
       override def apply(notes: Map[Point, List[RouteNote]]): Map[Point, List[RouteNote]] = {
-        val newRouteNotes = notes.getOrElse(note.location.getOrElse(Point(0,0)), Nil) :+ note
-        notes + (note.location.getOrElse(Point(0,0)) -> newRouteNotes)
+        val newRouteNotes = notes.getOrElse(note.location.getOrElse(throw new PointNotFoundError("location not found")), Nil) :+ note
+        notes + (note.location.getOrElse(throw new PointNotFoundError("location not found")) -> newRouteNotes)
       }
     })
 

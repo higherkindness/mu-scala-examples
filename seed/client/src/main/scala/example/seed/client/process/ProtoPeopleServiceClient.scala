@@ -29,6 +29,7 @@ import higherkindness.mu.rpc.ChannelForAddress
 import higherkindness.mu.rpc.channel.{ManagedChannelInterpreter, UsePlaintext}
 import io.chrisdavenport.log4cats.Logger
 import io.grpc.{CallOptions, ManagedChannel}
+import example.seed.client.common.PersonNotFoundError
 
 import scala.util.Random
 import scala.concurrent.duration._
@@ -54,7 +55,7 @@ object ProtoPeopleServiceClient {
           _      <- L.info(s"")
           result <- client.getPerson(PeopleRequest(name))
           _      <- L.info(s"$serviceName - Request: $name - Result: $result")
-        } yield result.person.getOrElse(Person("default", 0))
+        } yield result.person.getOrElse(throw new PersonNotFoundError("location not found"))
 
       def getRandomPersonStream: Stream[F, Person] = {
 
@@ -67,7 +68,7 @@ object ProtoPeopleServiceClient {
         for {
           result <- Stream.force(client.getPersonStream(requestStream))
           _      <- Stream.eval(L.info(s"$serviceName Stream Result: $result"))
-        } yield result.person.getOrElse(Person("default", 0))
+        } yield result.person.getOrElse(throw new PersonNotFoundError("location not found"))
       }
 
     }

@@ -26,6 +26,7 @@ import monix.reactive.Observable
 import org.log4s._
 import example.routeguide.protocol.service._
 import example.routeguide.common.Utils._
+import example.routeguide.common.PointNotFoundError
 
 import scala.concurrent.duration._
 
@@ -100,7 +101,7 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
         .use(
           _.recordRoute(
             Observable
-              .fromIterable(points.map(_.getOrElse(Point(0, 0))))
+              .fromIterable(points.map(_.getOrElse(throw new PointNotFoundError("location not found"))))
               .delayOnNext(500.milliseconds)
           )
         )
@@ -136,7 +137,7 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
                   .map { routeNote =>
                     logger.info(
                       s"Sending message '${routeNote.message}' at " +
-                        s"${routeNote.location.fold(0)(_.latitude)}, ${routeNote.location.fold(0)(_.longitude)}"
+                        s"${routeNote.location.getOrElse(throw new PointNotFoundError("location not found")).latitude}, ${routeNote.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
                     )
                     routeNote
                   }
@@ -146,7 +147,7 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
             .map { note: RouteNote =>
               logger.info(
                 s"Got message '${note.message}' at " +
-                  s"${note.location.fold(0)(_.latitude)}, ${note.location.fold(0)(_.longitude)}"
+                  s"${note.location.getOrElse(throw new PointNotFoundError("location not found")).latitude}, ${note.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
               )
             }
             .onErrorHandle {
