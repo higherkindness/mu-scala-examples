@@ -34,6 +34,7 @@ object ProjectPlugin extends AutoPlugin {
       val paradise: String      = "2.1.1"
       val pureconfig: String    = "0.12.3"
       val scala212: String      = "2.12.10"
+      val scala213: String      = "2.13.3"
       val scopt: String         = "3.7.1"
       val slf4j: String         = "1.7.30"
     }
@@ -169,8 +170,8 @@ object ProjectPlugin extends AutoPlugin {
     )
 
     lazy val noCrossCompilationLastScala: Seq[Def.Setting[_]] = Seq(
-      scalaVersion := V.scala212,
-      crossScalaVersions := Seq(V.scala212)
+      scalaVersion := V.scala213,
+      crossScalaVersions := Seq(V.scala213)
     )
 
     def isOlderScalaVersion(sv: String): Boolean =
@@ -196,9 +197,10 @@ object ProjectPlugin extends AutoPlugin {
         organizationHomePage = url("http://47deg.com"),
         organizationEmail = "hello@47deg.com"
       ),
-      scalaVersion := V.scala212,
-      crossScalaVersions := Seq(V.scala212), // , V.scala213), until next mu release
+      scalaVersion := V.scala213,
+      crossScalaVersions := Seq(V.scala213), // , V.scala213), until next mu release
       scalacOptions --= Seq("-Xfuture", "-Xfatal-warnings"),
+      scalacOptions ++= Seq("-Xlint:-missing-interpolator", "-Xlint:-byname-implicit"), // per https://github.com/scala/bug/issues/12072, we need to disable the warnings from doobie
       addCompilerPlugin(
         "org.typelevel" %% "kind-projector" % V.kindProjector cross CrossVersion.full
       ),

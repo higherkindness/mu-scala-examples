@@ -20,7 +20,6 @@ import org.log4s._
 import example.routeguide.protocol.Protocols._
 import example.routeguide.common.Codecs._
 import scala.io.Source
-import scala.language.implicitConversions
 
 object Utils {
 
