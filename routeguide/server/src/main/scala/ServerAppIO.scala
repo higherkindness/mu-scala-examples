@@ -35,7 +35,7 @@ object ServerAppIO {
       _           <- GrpcServer.server[IO](server)
     } yield ()
 
-    runServer.unsafeRunSync
+    runServer.unsafeRunSync()
   }
 
 }

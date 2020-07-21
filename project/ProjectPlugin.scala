@@ -33,7 +33,7 @@ object ProjectPlugin extends AutoPlugin {
       val natchez: String       = "0.0.11"
       val paradise: String      = "2.1.1"
       val pureconfig: String    = "0.12.3"
-      val scala212: String      = "2.12.10"
+      val scala213: String      = "2.13.3"
       val scopt: String         = "3.7.1"
       val slf4j: String         = "1.7.30"
     }
@@ -42,24 +42,11 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val macroSettings: Seq[Setting[_]] = {
 
-      def paradiseDependency(sv: String): Seq[ModuleID] =
-        if (isOlderScalaVersion(sv)) {
-          Seq(
-            compilerPlugin(
-              ("org.scalamacros" % "paradise" % V.paradise).cross(CrossVersion.patch)
-            )
-          )
-        } else Seq.empty
-
-      def macroAnnotationScalacOption(sv: String): Seq[String] =
-        if (isOlderScalaVersion(sv)) Seq.empty
-        else Seq("-Ymacro-annotations")
-
       Seq(
         libraryDependencies ++= Seq(
           scalaOrganization.value % "scala-compiler" % scalaVersion.value % Provided
-        ) ++ paradiseDependency(scalaVersion.value),
-        scalacOptions ++= macroAnnotationScalacOption(scalaVersion.value)
+        ),
+        scalacOptions ++= Seq("-Ymacro-annotations")
       )
     }
 
@@ -191,17 +178,6 @@ object ProjectPlugin extends AutoPlugin {
       )
     )
 
-    lazy val noCrossCompilationLastScala: Seq[Def.Setting[_]] = Seq(
-      scalaVersion := V.scala212,
-      crossScalaVersions := Seq(V.scala212)
-    )
-
-    def isOlderScalaVersion(sv: String): Boolean =
-      CrossVersion.partialVersion(sv) match {
-        case Some((2, minor)) if minor < 13 => true
-        case _                              => false
-      }
-
   }
 
   import autoImport._
@@ -219,9 +195,9 @@ object ProjectPlugin extends AutoPlugin {
         organizationHomePage = url("http://47deg.com"),
         organizationEmail = "hello@47deg.com"
       ),
-      scalaVersion := V.scala212,
-      crossScalaVersions := Seq(V.scala212), // , V.scala213), until next mu release
+      scalaVersion := V.scala213,
       scalacOptions --= Seq("-Xfuture", "-Xfatal-warnings"),
+      scalacOptions ++= Seq("-Xlint:-missing-interpolator", "-Xlint:-byname-implicit"), // per https://github.com/scala/bug/issues/12072, we need to disable the warnings from doobie
       addCompilerPlugin(
         "org.typelevel" %% "kind-projector" % V.kindProjector cross CrossVersion.full
       ),
