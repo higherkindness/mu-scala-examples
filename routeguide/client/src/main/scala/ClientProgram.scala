@@ -19,7 +19,7 @@ package example.routeguide.client
 import cats.Monad
 import cats.syntax.flatMap._
 import cats.syntax.functor._
-import example.routeguide.protocol.Protocols._
+import example.routeguide.protocol.service._
 import example.routeguide.common.Utils
 
 trait RouteGuideClient[F[_]] {

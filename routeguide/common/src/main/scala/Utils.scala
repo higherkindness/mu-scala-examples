@@ -17,7 +17,7 @@
 package example.routeguide.common
 
 import org.log4s._
-import example.routeguide.protocol.Protocols._
+import example.routeguide.protocol.service._
 import example.routeguide.common.Codecs._
 import scala.io.Source
 
@@ -66,9 +66,13 @@ object Utils {
     def findFeatureIn(features: List[Feature]): Feature =
       features
         .find(f =>
-          f.location.latitude == location.latitude && f.location.longitude == location.longitude
+          f.location
+            .getOrElse(throw new PointNotFoundError("location not found"))
+            .latitude == location.latitude && f.location
+            .getOrElse(throw new PointNotFoundError("location not found"))
+            .longitude == location.longitude
         )
-        .getOrElse(Feature(name = "", location = location))
+        .getOrElse(Feature(name = "", location = Option(location)))
 
     def pretty: String = s"[$getLatitude, $getLongitude]"
   }

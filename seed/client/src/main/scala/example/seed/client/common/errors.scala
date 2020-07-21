@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package example.seed.protocol.proto
+package example.seed.client.common
 
-object people {
+sealed trait SeedError extends Exception { val message: String }
 
-  final case class Person(name: String, age: Int)
-  final case class PeopleRequest(name: String)
-  final case class PeopleResponse(person: Person)
-
-}
+case class PersonNotFoundError(message: String) extends SeedError

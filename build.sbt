@@ -5,7 +5,7 @@
 lazy val `routeguide-protocol` = project
   .in(file("routeguide/protocol"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-monix")))
-  .disablePlugins(SrcGenPlugin)
+  .settings(exampleRouteguideProtocolSettings)
 
 lazy val `routeguide-runtime` = project
   .in(file("routeguide/runtime"))
@@ -59,19 +59,22 @@ lazy val routeguide = project
 lazy val `seed-config` = project
   .in(file("seed/config"))
   .settings(exampleSeedConfigSettings)
-  .disablePlugins(SrcGenPlugin)
 
-lazy val `seed-protocol` = project
-  .in(file("seed/protocol"))
+lazy val `seed-avro-protocol` = project
+  .in(file("seed/protocol/avro"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2"), mu("mu-rpc-service")))
-  .disablePlugins(SrcGenPlugin)
+  .settings(exampleSeedAvroProtocolSettings)
+
+lazy val `seed-protobuf-protocol` = project
+  .in(file("seed/protocol/proto"))
+  .settings(libraryDependencies ++= Seq(mu("mu-rpc-fs2"), mu("mu-rpc-service")))
+  .settings(exampleSeedProtobufProtocolSettings)
 
 lazy val `seed-server` = project
   .in(file("seed/server"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
-  .dependsOn(`seed-protocol`, `seed-config`)
+  .dependsOn(`seed-avro-protocol`, `seed-protobuf-protocol`, `seed-config`)
   .settings(exampleSeedLogSettings)
-  .disablePlugins(SrcGenPlugin)
 
 addCommandAlias("runAvroServer", "seed-server/runMain example.seed.server.app.AvroServerApp")
 addCommandAlias("runProtoServer", "seed-server/runMain example.seed.server.app.ProtoServerApp")
@@ -79,7 +82,7 @@ addCommandAlias("runProtoServer", "seed-server/runMain example.seed.server.app.P
 lazy val `seed-client` = project
   .in(file("seed/client"))
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-rpc-fs2")))
-  .dependsOn(`seed-protocol`, `seed-config`)
+  .dependsOn(`seed-avro-protocol`, `seed-protobuf-protocol`, `seed-config`)
   .settings(exampleSeedClientAppSettings)
   .settings(exampleSeedLogSettings)
   .disablePlugins(SrcGenPlugin)
@@ -90,7 +93,8 @@ addCommandAlias("runProtoClient", "seed-client/runMain example.seed.client.app.P
 lazy val seed = project
   .aggregate(
     `seed-config`,
-    `seed-protocol`,
+    `seed-avro-protocol`,
+    `seed-protobuf-protocol`,
     `seed-client`,
     `seed-server`
   ) 

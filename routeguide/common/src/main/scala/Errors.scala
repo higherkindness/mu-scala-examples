@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-package example.seed.protocol.avro
+package example.routeguide.common
 
-import shapeless.{:+:, CNil}
+sealed trait RouteGuideError extends Exception { val message: String }
 
-sealed trait People extends Product with Serializable
-
-final case class Person(name: String, age: Int) extends People
-
-final case class NotFoundError(message: String) extends People
-
-final case class DuplicatedPersonError(message: String) extends People
-
-final case class PeopleRequest(name: String) extends People
-
-final case class PeopleResponse(
-    result: Person :+: NotFoundError :+: DuplicatedPersonError :+: CNil
-) extends People
+case class PointNotFoundError(message: String) extends RouteGuideError

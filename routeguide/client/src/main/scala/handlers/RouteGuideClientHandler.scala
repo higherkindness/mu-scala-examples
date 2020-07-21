@@ -24,8 +24,9 @@ import io.grpc.{Status, StatusRuntimeException}
 import monix.eval.Task
 import monix.reactive.Observable
 import org.log4s._
-import example.routeguide.protocol.Protocols._
+import example.routeguide.protocol.service._
 import example.routeguide.common.Utils._
+import example.routeguide.common.PointNotFoundError
 
 import scala.concurrent.duration._
 
@@ -42,8 +43,12 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
         .use(_.getFeature(Point(lat, lon)))
         .map { feature: Feature =>
           if (feature.valid)
-            logger.info(s"Found feature called '${feature.name}' at ${feature.location.pretty}")
-          else logger.info(s"Found no feature at ${feature.location.pretty}")
+            logger.info(s"Found feature called '${feature.name}' at ${feature.location
+              .fold("no location found, actually")(_.pretty)}")
+          else
+            logger.info(
+              s"Found no feature at ${feature.location.fold("no location found, either")(_.pretty)}"
+            )
         }
         .handleErrorWith {
           case e: StatusRuntimeException =>
@@ -63,8 +68,8 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
             .from(
               c.listFeatures(
                 Rectangle(
-                  lo = Point(lowLat, lowLon),
-                  hi = Point(hiLat, hiLon)
+                  lo = Option(Point(lowLat, lowLon)),
+                  hi = Option(Point(hiLat, hiLon))
                 )
               )
             )
@@ -87,12 +92,18 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
     def takeN: List[Feature] = scala.util.Random.shuffle(features).take(numPoints)
 
     val points = takeN.map(_.location)
-    Async[F].delay(logger.info(s"*** RecordRoute. Points: ${points.map(_.pretty).mkString(";")}")) *>
+    Async[F].delay(
+      logger.info(
+        s"*** RecordRoute. Points: ${points.map(_.fold("no points found")(_.pretty)).mkString(";")}"
+      )
+    ) *>
       client
         .use(
           _.recordRoute(
             Observable
-              .fromIterable(points)
+              .fromIterable(
+                points.map(_.getOrElse(throw new PointNotFoundError("location not found")))
+              )
               .delayOnNext(500.milliseconds)
           )
         )
@@ -118,17 +129,19 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
                 Observable
                   .fromIterable(
                     List(
-                      RouteNote(message = "First message", location = Point(0, 0)),
-                      RouteNote(message = "Second message", location = Point(0, 1)),
-                      RouteNote(message = "Third message", location = Point(1, 0)),
-                      RouteNote(message = "Fourth message", location = Point(1, 1))
+                      RouteNote(message = "First message", location = Option(Point(0, 0))),
+                      RouteNote(message = "Second message", location = Option(Point(0, 1))),
+                      RouteNote(message = "Third message", location = Option(Point(1, 0))),
+                      RouteNote(message = "Fourth message", location = Option(Point(1, 1)))
                     )
                   )
                   .delayOnNext(10.milliseconds)
                   .map { routeNote =>
                     logger.info(
                       s"Sending message '${routeNote.message}' at " +
-                        s"${routeNote.location.latitude}, ${routeNote.location.longitude}"
+                        s"${routeNote.location
+                          .getOrElse(throw new PointNotFoundError("location not found"))
+                          .latitude}, ${routeNote.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
                     )
                     routeNote
                   }
@@ -138,7 +151,7 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
             .map { note: RouteNote =>
               logger.info(
                 s"Got message '${note.message}' at " +
-                  s"${note.location.latitude}, ${note.location.longitude}"
+                  s"${note.location.getOrElse(throw new PointNotFoundError("location not found")).latitude}, ${note.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
               )
             }
             .onErrorHandle {

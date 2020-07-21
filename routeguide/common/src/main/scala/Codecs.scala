@@ -18,7 +18,7 @@ package example.routeguide.common
 
 import io.circe._
 import io.circe.generic.semiauto._
-import example.routeguide.protocol.Protocols._
+import example.routeguide.protocol.service._
 
 object Codecs {
 

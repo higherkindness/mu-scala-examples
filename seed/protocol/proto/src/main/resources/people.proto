@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package example.seed.protocol.proto;
+
+message Person {
+  string name = 1;
+  int32 age = 2;
+}
+
+message PeopleRequest {
+  string name = 1;
+}
+
+message PeopleResponse {
+  Person person = 1;
+}
+

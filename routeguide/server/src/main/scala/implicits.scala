@@ -18,7 +18,7 @@ package example.routeguide.server
 
 import cats.effect.IO
 import example.routeguide.server.handlers.RouteGuideServiceHandler
-import example.routeguide.protocol.Protocols.RouteGuideService
+import example.routeguide.protocol.service._
 import example.routeguide.runtime._
 
 sealed trait ServerImplicits extends RouteGuide {

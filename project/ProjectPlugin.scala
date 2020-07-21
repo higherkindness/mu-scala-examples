@@ -29,7 +29,7 @@ object ProjectPlugin extends AutoPlugin {
       val log4s: String         = "1.8.2"
       val logback: String       = "1.2.3"
       val monix: String         = "3.2.1"
-      val mu: String            = "0.22.0"
+      val mu: String            = "0.22.3"
       val natchez: String       = "0.0.11"
       val paradise: String      = "2.1.1"
       val pureconfig: String    = "0.12.3"
@@ -76,6 +76,12 @@ object ProjectPlugin extends AutoPlugin {
       )
     )
 
+    lazy val exampleRouteguideProtocolSettings: Seq[Def.Setting[_]] = Seq(
+      muSrcGenIdlType := IdlType.Proto,
+      muSrcGenStreamingImplementation := higherkindness.mu.rpc.srcgen.Model.MonixObservable,
+      muSrcGenIdiomaticEndpoints := true
+    )
+
     lazy val exampleRouteguideCommonSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
         "io.circe"       %% "circe-core"     % V.circe,
@@ -99,6 +105,23 @@ object ProjectPlugin extends AutoPlugin {
         "org.typelevel"         %% "cats-effect" % V.catsEffect,
         "com.github.pureconfig" %% "pureconfig"  % V.pureconfig
       )
+    )
+
+    lazy val exampleSeedProtobufProtocolSettings: Seq[Def.Setting[_]] = Seq(
+      libraryDependencies ++= Seq(
+         mu("mu-rpc-fs2"), 
+         mu("mu-rpc-service")
+      ),
+      muSrcGenIdlType := IdlType.Proto,
+      muSrcGenIdiomaticEndpoints := true
+    )
+
+    lazy val exampleSeedAvroProtocolSettings: Seq[Def.Setting[_]] = Seq(
+      libraryDependencies ++= Seq(
+         mu("mu-rpc-service")
+      ),
+      muSrcGenIdlType := IdlType.Avro,
+      muSrcGenIdiomaticEndpoints := true
     )
 
     lazy val exampleSeedClientAppSettings: Seq[Def.Setting[_]] = Seq(

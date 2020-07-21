@@ -20,7 +20,7 @@ import cats.effect.IO
 import higherkindness.mu.rpc.server.{AddService, GrpcServer}
 import higherkindness.mu.rpc.config.server.BuildServerFromConfig
 import org.log4s._
-import example.routeguide.protocol.Protocols.RouteGuideService
+import example.routeguide.protocol.service._
 import example.routeguide.server.implicits._
 
 object ServerAppIO {
