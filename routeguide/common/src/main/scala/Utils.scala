@@ -66,8 +66,11 @@ object Utils {
     def findFeatureIn(features: List[Feature]): Feature =
       features
         .find(f =>
-          f.location.getOrElse(throw new PointNotFoundError("location not found")).latitude == location.latitude && f.location
-            .getOrElse(throw new PointNotFoundError("location not found")).longitude == location.longitude
+          f.location
+            .getOrElse(throw new PointNotFoundError("location not found"))
+            .latitude == location.latitude && f.location
+            .getOrElse(throw new PointNotFoundError("location not found"))
+            .longitude == location.longitude
         )
         .getOrElse(Feature(name = "", location = Option(location)))
 

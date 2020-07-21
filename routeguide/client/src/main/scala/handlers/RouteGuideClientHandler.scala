@@ -101,7 +101,9 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
         .use(
           _.recordRoute(
             Observable
-              .fromIterable(points.map(_.getOrElse(throw new PointNotFoundError("location not found"))))
+              .fromIterable(
+                points.map(_.getOrElse(throw new PointNotFoundError("location not found")))
+              )
               .delayOnNext(500.milliseconds)
           )
         )
@@ -137,7 +139,9 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
                   .map { routeNote =>
                     logger.info(
                       s"Sending message '${routeNote.message}' at " +
-                        s"${routeNote.location.getOrElse(throw new PointNotFoundError("location not found")).latitude}, ${routeNote.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
+                        s"${routeNote.location
+                          .getOrElse(throw new PointNotFoundError("location not found"))
+                          .latitude}, ${routeNote.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
                     )
                     routeNote
                   }
