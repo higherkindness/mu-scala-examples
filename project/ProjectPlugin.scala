@@ -168,17 +168,6 @@ object ProjectPlugin extends AutoPlugin {
       )
     )
 
-    lazy val noCrossCompilationLastScala: Seq[Def.Setting[_]] = Seq(
-      scalaVersion := V.scala213,
-      crossScalaVersions := Seq(V.scala213)
-    )
-
-    def isOlderScalaVersion(sv: String): Boolean =
-      CrossVersion.partialVersion(sv) match {
-        case Some((2, minor)) if minor < 13 => true
-        case _                              => false
-      }
-
   }
 
   import autoImport._
@@ -197,7 +186,6 @@ object ProjectPlugin extends AutoPlugin {
         organizationEmail = "hello@47deg.com"
       ),
       scalaVersion := V.scala213,
-      crossScalaVersions := Seq(V.scala213),
       scalacOptions --= Seq("-Xfuture", "-Xfatal-warnings"),
       scalacOptions ++= Seq("-Xlint:-missing-interpolator", "-Xlint:-byname-implicit"), // per https://github.com/scala/bug/issues/12072, we need to disable the warnings from doobie
       addCompilerPlugin(
