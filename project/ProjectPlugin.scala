@@ -42,24 +42,11 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val macroSettings: Seq[Setting[_]] = {
 
-      def paradiseDependency(sv: String): Seq[ModuleID] =
-        if (isOlderScalaVersion(sv)) {
-          Seq(
-            compilerPlugin(
-              ("org.scalamacros" % "paradise" % V.paradise).cross(CrossVersion.patch)
-            )
-          )
-        } else Seq.empty
-
-      def macroAnnotationScalacOption(sv: String): Seq[String] =
-        if (isOlderScalaVersion(sv)) Seq.empty
-        else Seq("-Ymacro-annotations")
-
       Seq(
         libraryDependencies ++= Seq(
           scalaOrganization.value % "scala-compiler" % scalaVersion.value % Provided
-        ) ++ paradiseDependency(scalaVersion.value),
-        scalacOptions ++= macroAnnotationScalacOption(scalaVersion.value)
+        ),
+        scalacOptions ++= Seq("-Ymacro-annotations")
       )
     }
 
