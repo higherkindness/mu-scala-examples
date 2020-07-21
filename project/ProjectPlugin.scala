@@ -198,7 +198,7 @@ object ProjectPlugin extends AutoPlugin {
         organizationEmail = "hello@47deg.com"
       ),
       scalaVersion := V.scala213,
-      crossScalaVersions := Seq(V.scala213), // , V.scala213), until next mu release
+      crossScalaVersions := Seq(V.scala213),
       scalacOptions --= Seq("-Xfuture", "-Xfatal-warnings"),
       scalacOptions ++= Seq("-Xlint:-missing-interpolator", "-Xlint:-byname-implicit"), // per https://github.com/scala/bug/issues/12072, we need to disable the warnings from doobie
       addCompilerPlugin(
