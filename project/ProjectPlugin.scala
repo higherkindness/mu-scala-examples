@@ -33,7 +33,6 @@ object ProjectPlugin extends AutoPlugin {
       val natchez: String       = "0.0.11"
       val paradise: String      = "2.1.1"
       val pureconfig: String    = "0.12.3"
-      val scala212: String      = "2.12.10"
       val scala213: String      = "2.13.3"
       val scopt: String         = "3.7.1"
       val slf4j: String         = "1.7.30"
