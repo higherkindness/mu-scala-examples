@@ -19,9 +19,9 @@ package example.seed.client.app
 import cats.effect._
 import example.seed.client.common.models._
 import fs2.Stream
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
-class AvroClientProgram[F[_]: ConcurrentEffect: ContextShift: Timer] extends ClientBoot[F] {
+class AvroClientProgram[F[_]: Async] extends ClientBoot[F] {
 
   def clientProgram(config: SeedClientConfig)(implicit L: Logger[F]): Stream[F, ExitCode] = {
     for {

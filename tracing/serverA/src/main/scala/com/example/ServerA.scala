@@ -49,11 +49,12 @@ object ServerA extends IOApp {
       happinessServiceClient.use { client =>
         implicit val greeter: Greeter[Kleisli[IO, Span[IO], *]] =
           new MyGreeter[Kleisli[IO, Span[IO], *]](client)
-        for {
-          serviceDef <- Greeter.bindTracingService[IO](ep)
-          server     <- GrpcServer.default[IO](12345, List(AddService(serviceDef)))
-          _          <- GrpcServer.server[IO](server)
-        } yield ExitCode.Success
+        Greeter.bindTracingService[IO](ep).use { serviceDef =>
+          for {
+            server <- GrpcServer.default[IO](12345, List(AddService(serviceDef)))
+            _      <- GrpcServer.server[IO](server)
+          } yield ExitCode.Success
+        }
       }
     }
   }

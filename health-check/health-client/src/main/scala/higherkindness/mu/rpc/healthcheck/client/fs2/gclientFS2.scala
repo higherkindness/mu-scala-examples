@@ -21,8 +21,8 @@ import higherkindness.mu.rpc.ChannelFor
 import higherkindness.mu.rpc.config.channel.ConfigForAddress
 import higherkindness.mu.rpc.healthcheck.fs2.serviceFS2.HealthCheckServiceFS2
 import higherkindness.mu.rpc.healthcheck.sFs2.CommonRuntimeFS2
-import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 object gclientFS2 {
 

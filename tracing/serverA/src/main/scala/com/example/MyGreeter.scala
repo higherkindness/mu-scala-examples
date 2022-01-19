@@ -17,18 +17,14 @@
 package com.example
 
 import fs2._
-import cats._
 import cats.implicits._
-import cats.effect._
+import cats.effect.Async
 import com.example.hello._
 import com.example.happy._
 import natchez._
 import scala.concurrent.duration._
 
-class MyGreeter[F[_]: MonadError[*[_], Throwable]: Timer: Trace](
-    happinessClient: HappinessService[F]
-)(implicit compiler: Stream.Compiler[F, F])
-    extends Greeter[F] {
+class MyGreeter[F[_]: Async: Trace](happinessClient: HappinessService[F]) extends Greeter[F] {
 
   def ClientStreaming(req: Stream[F, HelloRequest]): F[HelloResponse] =
     for {
@@ -59,7 +55,7 @@ class MyGreeter[F[_]: MonadError[*[_], Throwable]: Timer: Trace](
   def lookupGreetingInCache(name: String): F[Option[String]] =
     Trace[F].span("lookup greeting in cache") {
       // simulate looking in Redis and not finding anything
-      Timer[F].sleep(5.millis) *>
+      Async[F].sleep(5.millis) *>
         Trace[F].put(
           "name"      -> TraceValue.StringValue(name),
           "cache_hit" -> TraceValue.BooleanValue(false)
@@ -70,7 +66,7 @@ class MyGreeter[F[_]: MonadError[*[_], Throwable]: Timer: Trace](
   def lookupGreetingInDB(name: String): F[String] =
     Trace[F].span("lookup greeting in DB") {
       // simulate reading the value from a DB
-      Timer[F].sleep(100.millis) *>
+      Async[F].sleep(100.millis) *>
         Trace[F].put("name" -> TraceValue.StringValue(name)) *>
         s"Hello, $name!".pure[F]
     }
@@ -82,7 +78,7 @@ class MyGreeter[F[_]: MonadError[*[_], Throwable]: Timer: Trace](
         "name"     -> TraceValue.StringValue(name),
         "greeting" -> TraceValue.StringValue(greeting)
       ) *>
-        Timer[F].sleep(5.millis)
+        Async[F].sleep(5.millis)
     }
 
   def lookupGreetingInDBAndWriteToCache(name: String): F[String] =

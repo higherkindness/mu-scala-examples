@@ -17,7 +17,8 @@
 package higherkindness.mu.rpc.healthcheck.sFs2
 
 import cats.effect.IO
-import higherkindness.mu.rpc.server.{AddService, GrpcConfig, GrpcServer}
+import cats.effect.kernel.Resource
+import higherkindness.mu.rpc.server.{AddService, GrpcServer}
 import gserver.implicits._
 import cats.instances.list._
 import cats.syntax.traverse._
@@ -30,18 +31,17 @@ object ServerApp {
 
     val healthCheck: IO[HealthCheckServiceFS2[IO]] = HealthServiceFS2.buildInstance[IO]
 
-    def grpcConfigs(implicit HC: HealthCheckServiceFS2[IO]): IO[List[GrpcConfig]] =
+    def grpcConfigs(implicit HC: HealthCheckServiceFS2[IO]): Resource[IO, List[AddService]] =
       List(
         HealthCheckServiceFS2.bindService[IO]
       ).sequence.map(_.map(AddService))
 
-    val runServer = for {
-      health <- healthCheck
+    val server = for {
+      health <- Resource.eval(healthCheck)
       config <- grpcConfigs(health)
-      server <- GrpcServer.default[IO](50051, config)
-      _      <- GrpcServer.server[IO](server)
-    } yield ()
+      server <- Resource.eval(GrpcServer.default[IO](50051, config))
+    } yield server
 
-    runServer.unsafeRunSync()
+    server.use(GrpcServer.server[IO]).unsafeRunSync()
   }
 }

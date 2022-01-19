@@ -23,9 +23,9 @@ import example.seed.server.common.models._
 import example.seed.server.process.ProtoPeopleServiceHandler
 import example.seed.protocol.proto.services._
 import higherkindness.mu.rpc.server.{AddService, GrpcServer}
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
-class ProtoServerProgram[F[_]: ConcurrentEffect: Timer] extends ServerBoot[F] {
+class ProtoServerProgram[F[_]: Async] extends ServerBoot[F] {
 
   def serverProgram(config: SeedServerConfig)(implicit L: Logger[F]): F[ExitCode] = {
 
@@ -33,16 +33,17 @@ class ProtoServerProgram[F[_]: ConcurrentEffect: Timer] extends ServerBoot[F] {
 
     implicit val PS: PeopleService[F] = new ProtoPeopleServiceHandler[F]
 
-    for {
-      peopleService <- PeopleService.bindService[F]
-      server        <- GrpcServer.default[F](config.port, List(AddService(peopleService)))
-      _             <- L.info(s"$serverName - Starting server at ${config.host}:${config.port}")
-      exitCode      <- GrpcServer.server(server).as(ExitCode.Success)
-    } yield exitCode
+    PeopleService.bindService[F].use { peopleService =>
+      for {
+        server   <- GrpcServer.default[F](config.port, List(AddService(peopleService)))
+        _        <- L.info(s"$serverName - Starting server at ${config.host}:${config.port}")
+        exitCode <- GrpcServer.server(server).as(ExitCode.Success)
+      } yield exitCode
+    }
 
   }
 }
 
 object ProtoServerApp extends IOApp {
-  def run(args: List[String]): IO[ExitCode] = new ProtoServerProgram[IO].runProgram(args)
+  def run(args: List[String]): IO[ExitCode] = new ProtoServerProgram[IO].runProgram
 }

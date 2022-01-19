@@ -24,8 +24,8 @@ import examples.todolist.client.clients.TodoItemClient
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
 import higherkindness.mu.rpc.protocol.Empty
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 class TodoItemClientHandler[F[_]: Sync](client: Resource[F, TodoItemRpcService[F]])
     extends TodoItemClient[F] {

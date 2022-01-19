@@ -22,8 +22,8 @@ import cats.effect.{Resource, Sync}
 import examples.todolist.client.clients.PingPongClient
 import examples.todolist.protocol.Protocols.PingPongService
 import higherkindness.mu.rpc.protocol.Empty
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 class PingPongClientHandler[F[_]: Sync](client: Resource[F, PingPongService[F]])
     extends PingPongClient[F] {

@@ -16,7 +16,8 @@
 
 package examples.todolist.client
 
-import cats.effect.{ContextShift, IO, Resource, Timer}
+import cats.effect._
+import cats.effect.unsafe.IORuntime
 import examples.todolist.client.handlers._
 import examples.todolist.protocol.Protocols._
 import examples.todolist.runtime.CommonRuntime
@@ -25,8 +26,7 @@ import higherkindness.mu.rpc.config.channel.ConfigForAddress
 
 trait ClientImplicits extends CommonRuntime {
 
-  implicit val timer: Timer[IO]     = IO.timer(EC)
-  implicit val cs: ContextShift[IO] = IO.contextShift(EC)
+  implicit val ioRuntime: IORuntime = IORuntime.global
 
   val channelFor: ChannelFor =
     ConfigForAddress[IO]("rpc.client.host", "rpc.client.port").unsafeRunSync()

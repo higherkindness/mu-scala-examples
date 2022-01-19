@@ -26,7 +26,7 @@ import example.seed.client.process.runtime.handlers._
 import example.seed.protocol.avro._
 import higherkindness.mu.rpc.ChannelForAddress
 import higherkindness.mu.rpc.channel.{ManagedChannelInterpreter, UsePlaintext}
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import io.grpc.{CallOptions, ManagedChannel}
 
 trait AvroPeopleServiceClient[F[_]] {
@@ -38,7 +38,7 @@ object AvroPeopleServiceClient {
 
   val serviceName = "AvroPeopleClient"
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       client: PeopleService[F]
   )(implicit L: Logger[F]): AvroPeopleServiceClient[F] =
     new AvroPeopleServiceClient[F] {
@@ -53,12 +53,13 @@ object AvroPeopleServiceClient {
 
     }
 
-  def createClient[F[_]: ContextShift: Logger](hostname: String, port: Int)(
-      implicit F: ConcurrentEffect[F]
+  def createClient[F[_]: Async: Logger](
+      hostname: String,
+      port: Int
   ): fs2.Stream[F, AvroPeopleServiceClient[F]] = {
 
     val channel: F[ManagedChannel] =
-      F.delay(InetAddress.getByName(hostname).getHostAddress).flatMap { ip =>
+      Async[F].delay(InetAddress.getByName(hostname).getHostAddress).flatMap { ip =>
         val channelFor = ChannelForAddress(ip, port)
         new ManagedChannelInterpreter[F](channelFor, List(UsePlaintext())).build
       }

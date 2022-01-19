@@ -25,8 +25,8 @@ import examples.todolist.protocol.Protocols._
 import examples.todolist.Tag
 import examples.todolist.persistence.TagRepository
 import higherkindness.mu.rpc.protocol.Empty
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 class TagRpcServiceHandler[F[_]: Sync](implicit repo: TagRepository[F]) extends TagRpcService[F] {
 

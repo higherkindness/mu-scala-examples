@@ -16,15 +16,13 @@
 
 package examples.todolist.persistence.runtime
 
-import cats.Monad
-import cats.effect.Bracket
+import cats.effect._
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import examples.todolist.model.AppModel
 import examples.todolist.persistence.AppRepository
 
-class AppRepositoryHandler[F[_]: Monad](implicit T: Transactor[F], ev: Bracket[F, Throwable])
-    extends AppRepository[F] {
+class AppRepositoryHandler[F[_]: Async](implicit T: Transactor[F]) extends AppRepository[F] {
 
   import examples.todolist.persistence.runtime.queries.AppQueries._
 

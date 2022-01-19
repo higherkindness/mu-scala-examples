@@ -16,14 +16,10 @@
 
 package example.routeguide.runtime
 
-import cats.effect.{ContextShift, IO, Timer}
-import monix.execution.Scheduler
+import cats.effect.unsafe.IORuntime
 
 trait RouteGuide {
 
-  implicit val S: Scheduler = Scheduler.Implicits.global
-
-  implicit val timer: Timer[IO]     = IO.timer(S)
-  implicit val cs: ContextShift[IO] = IO.contextShift(S)
+  implicit val ioRuntime: IORuntime = IORuntime.global
 
 }

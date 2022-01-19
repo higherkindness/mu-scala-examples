@@ -20,7 +20,7 @@ import cats.effect.Sync
 import cats.syntax.functor._
 import example.seed.protocol.avro._
 import example.seed.protocol.avro.PeopleService
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import shapeless.{:+:, CNil, Coproduct}
 
 class AvroPeopleServiceHandler[F[_]: Sync](implicit L: Logger[F]) extends PeopleService[F] {
