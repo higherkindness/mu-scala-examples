@@ -59,9 +59,10 @@ object Utils {
     /**
      * Search a location among the list of specified features.
      *
-     * @param features List of features where the location is searched.
-     * @return The feature, an invalid feature is returned in case the
-     *         location is not found.
+     * @param features
+     *   List of features where the location is searched.
+     * @return
+     *   The feature, an invalid feature is returned in case the location is not found.
      */
     def findFeatureIn(features: List[Feature]): Feature =
       features
@@ -87,12 +88,15 @@ object Utils {
   }
 
   /**
-   * Calculate the distance between two points using the "haversine" formula.
-   * This code was taken from http://www.movable-type.co.uk/scripts/latlong.html.
+   * Calculate the distance between two points using the "haversine" formula. This code was taken
+   * from http://www.movable-type.co.uk/scripts/latlong.html.
    *
-   * @param start The starting point
-   * @param end   The end point
-   * @return The distance between the points in meters
+   * @param start
+   *   The starting point
+   * @param end
+   *   The end point
+   * @return
+   *   The distance between the points in meters
    */
   def calcDistance(start: Point, end: Point): Int = {
     val lat1: Double = start.getLatitude

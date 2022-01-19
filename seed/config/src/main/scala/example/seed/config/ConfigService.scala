@@ -16,24 +16,22 @@
 
 package example.seed.config
 
-import cats.effect.Effect
+import cats.effect._
 import cats.syntax.either._
-import pureconfig.{ConfigReader, Derivation}
+import pureconfig.ConfigReader
 import pureconfig.ConfigSource
 
 trait ConfigService[F[_]] {
 
-  def serviceConfig[Config](implicit reader: Derivation[ConfigReader[Config]]): F[Config]
+  def serviceConfig[Config: ConfigReader]: F[Config]
 
 }
 
 object ConfigService {
-  def apply[F[_]: Effect]: ConfigService[F] = new ConfigService[F] {
+  def apply[F[_]: Async]: ConfigService[F] = new ConfigService[F] {
 
-    override def serviceConfig[Config](
-        implicit reader: Derivation[ConfigReader[Config]]
-    ): F[Config] =
-      Effect[F].fromEither(
+    override def serviceConfig[Config: ConfigReader]: F[Config] =
+      Async[F].fromEither(
         ConfigSource.default
           .load[Config]
           .leftMap(e => new IllegalStateException(s"Error loading configuration: $e"))

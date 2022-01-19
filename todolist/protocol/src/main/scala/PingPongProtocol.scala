@@ -24,7 +24,8 @@ trait PingPongProtocol {
   /**
    * Pong response with current timestamp
    *
-   * @param time Current timestamp.
+   * @param time
+   *   Current timestamp.
    */
   case class Pong(time: Long = System.currentTimeMillis() / 1000L)
 
@@ -35,7 +36,8 @@ trait PingPongProtocol {
      * A simple ping-pong rpc.
      *
      * @param empty
-     * @return Pong response with current timestamp.
+     * @return
+     *   Pong response with current timestamp.
      */
     def ping(empty: Empty.type): F[Pong]
 

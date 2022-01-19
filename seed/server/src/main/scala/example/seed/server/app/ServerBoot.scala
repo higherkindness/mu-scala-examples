@@ -21,13 +21,13 @@ import cats.syntax.flatMap._
 import cats.syntax.functor._
 import example.seed.config.ConfigService
 import example.seed.server.common.models._
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import pureconfig.generic.auto._
 
-abstract class ServerBoot[F[_]: ConcurrentEffect] {
+abstract class ServerBoot[F[_]: Async] {
 
-  def runProgram(args: List[String]): F[ExitCode] =
+  def runProgram: F[ExitCode] =
     for {
       config   <- ConfigService[F].serviceConfig[SeedServerConfig]
       logger   <- Slf4jLogger.fromName[F](config.name)

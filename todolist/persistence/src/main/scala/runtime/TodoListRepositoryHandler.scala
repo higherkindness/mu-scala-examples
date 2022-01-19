@@ -16,12 +16,11 @@
 
 package examples.todolist.persistence.runtime
 
-import cats.Monad
 import doobie.ConnectionIO
 import examples.todolist.TodoList
 import examples.todolist.persistence.TodoListRepository
 
-class TodoListRepositoryHandler[F[_]: Monad] extends TodoListRepository[ConnectionIO] {
+class TodoListRepositoryHandler[F[_]] extends TodoListRepository[ConnectionIO] {
 
   import examples.todolist.persistence.runtime.queries.TodoListQueries._
 

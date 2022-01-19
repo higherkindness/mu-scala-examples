@@ -23,6 +23,8 @@ import higherkindness.mu.rpc.config.channel.ConfigForAddress
 trait ClientConf {
 
   val channelFor: ChannelFor =
-    ConfigForAddress[IO]("rpc.client.host", "rpc.client.port").unsafeRunSync()
+    ConfigForAddress[IO]("rpc.client.host", "rpc.client.port").unsafeRunSync()(
+      cats.effect.unsafe.IORuntime.global
+    )
 
 }

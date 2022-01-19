@@ -16,14 +16,10 @@
 
 package higherkindness.mu.rpc.healthcheck.sFs2
 
+import cats.effect.unsafe.IORuntime
+
 trait CommonRuntimeFS2 {
 
-  val EC: scala.concurrent.ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
-
-  implicit val timer: cats.effect.Timer[cats.effect.IO] =
-    cats.effect.IO.timer(EC)
-  implicit val cs: cats.effect.ContextShift[cats.effect.IO] =
-    cats.effect.IO.contextShift(EC)
+  implicit val runtime: IORuntime = IORuntime.global
 
 }

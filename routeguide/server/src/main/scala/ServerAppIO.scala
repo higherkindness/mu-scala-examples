@@ -27,13 +27,14 @@ object ServerAppIO {
 
   def main(args: Array[String]): Unit = {
 
-    val runServer = for {
-      logger      <- IO(getLogger)
-      grpcConfigs <- RouteGuideService.bindService[IO].map(AddService)
-      server      <- BuildServerFromConfig[IO]("rpc.server.port", List(grpcConfigs))
-      _           <- IO(logger.info(s"Server is starting ..."))
-      _           <- GrpcServer.server[IO](server)
-    } yield ()
+    val runServer = RouteGuideService.bindService[IO].map(AddService).use { grpcConfigs =>
+      for {
+        logger <- IO(getLogger)
+        server <- BuildServerFromConfig[IO]("rpc.server.port", List(grpcConfigs))
+        _      <- IO(logger.info(s"Server is starting ..."))
+        _      <- GrpcServer.server[IO](server)
+      } yield ()
+    }
 
     runServer.unsafeRunSync()
   }

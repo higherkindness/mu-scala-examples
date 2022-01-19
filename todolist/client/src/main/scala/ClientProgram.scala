@@ -26,11 +26,11 @@ object ClientProgram {
 
   val logger: Logger = getLogger
 
-  def pongProgram[M[_]: Monad](implicit client: PingPongClient[M]): M[Unit] =
+  def pongProgram[M[_]](implicit client: PingPongClient[M]): M[Unit] =
     client.ping()
 
-  def exampleProgram[M[_]: Monad](
-      implicit tagClient: TagClient[M],
+  def exampleProgram[M[_]: Monad](implicit
+      tagClient: TagClient[M],
       todoListClient: TodoListClient[M],
       todoItemClient: TodoItemClient[M]
   ): M[Unit] =

@@ -23,9 +23,9 @@ import example.seed.server.common.models._
 import example.seed.server.process.AvroPeopleServiceHandler
 import example.seed.protocol.avro._
 import higherkindness.mu.rpc.server._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
-class AvroServerProgram[F[_]: ConcurrentEffect] extends ServerBoot[F] {
+class AvroServerProgram[F[_]: Async] extends ServerBoot[F] {
 
   def serverProgram(config: SeedServerConfig)(implicit L: Logger[F]): F[ExitCode] = {
 
@@ -33,16 +33,17 @@ class AvroServerProgram[F[_]: ConcurrentEffect] extends ServerBoot[F] {
 
     implicit val PS: PeopleService[F] = new AvroPeopleServiceHandler[F]
 
-    for {
-      peopleService <- PeopleService.bindService[F]
-      server        <- GrpcServer.default[F](config.port, List(AddService(peopleService)))
-      _             <- L.info(s"$serverName - Starting server at ${config.host}:${config.port}")
-      exitCode      <- GrpcServer.server(server).as(ExitCode.Success)
-    } yield exitCode
+    PeopleService.bindService[F].use { peopleService =>
+      for {
+        server   <- GrpcServer.default[F](config.port, List(AddService(peopleService)))
+        _        <- L.info(s"$serverName - Starting server at ${config.host}:${config.port}")
+        exitCode <- GrpcServer.server(server).as(ExitCode.Success)
+      } yield exitCode
+    }
 
   }
 }
 
 object AvroServerApp extends IOApp {
-  def run(args: List[String]): IO[ExitCode] = new AvroServerProgram[IO].runProgram(args)
+  def run(args: List[String]): IO[ExitCode] = new AvroServerProgram[IO].runProgram
 }

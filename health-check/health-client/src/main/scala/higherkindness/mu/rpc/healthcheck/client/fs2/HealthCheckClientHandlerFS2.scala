@@ -22,7 +22,7 @@ import cats.implicits._
 import higherkindness.mu.rpc.healthcheck.fs2.serviceFS2.HealthCheckServiceFS2
 import higherkindness.mu.rpc.healthcheck.unary.handler._
 import higherkindness.mu.rpc.protocol.Empty
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
 class HealthCheckClientHandlerFS2[F[_]: Async](client: Resource[F, HealthCheckServiceFS2[F]])(
     implicit logger: Logger[F]
@@ -30,7 +30,7 @@ class HealthCheckClientHandlerFS2[F[_]: Async](client: Resource[F, HealthCheckSe
 
   def updatingWatching(name: String) =
     for {
-      _      <- client.use(_.setStatus(HealthStatus(new HealthCheck(name), ServerStatus("SERVING"))))
+      _ <- client.use(_.setStatus(HealthStatus(new HealthCheck(name), ServerStatus("SERVING"))))
       status <- client.use(_.check(new HealthCheck(name)))
       _      <- logger.info("Status of " + name + " service update to" + status)
     } yield ()
@@ -57,8 +57,8 @@ class HealthCheckClientHandlerFS2[F[_]: Async](client: Resource[F, HealthCheckSe
       _ <- logger.info(
         "UNARY: Setting " + name.toUpperCase + " service with " + status.status + " status"
       )
-      _      <- client.use(_.setStatus(HealthStatus(new HealthCheck(name), status)))
-      _      <- logger.info("UNARY: Added status: " + status.status + " to service: " + name.toUpperCase)
+      _ <- client.use(_.setStatus(HealthStatus(new HealthCheck(name), status)))
+      _ <- logger.info("UNARY: Added status: " + status.status + " to service: " + name.toUpperCase)
       status <- client.use(_.check(new HealthCheck(name)))
       _ <- logger.info(
         "UNARY: Checked the status of " + name.toUpperCase + ". Obtained: " + status.status

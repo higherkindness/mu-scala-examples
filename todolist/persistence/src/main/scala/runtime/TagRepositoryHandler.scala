@@ -16,12 +16,11 @@
 
 package examples.todolist.persistence.runtime
 
-import cats.Monad
 import doobie.ConnectionIO
 import examples.todolist.Tag
 import examples.todolist.persistence.TagRepository
 
-class TagRepositoryHandler[F[_]: Monad] extends TagRepository[ConnectionIO] {
+class TagRepositoryHandler[F[_]] extends TagRepository[ConnectionIO] {
 
   import examples.todolist.persistence.runtime.queries.TagQueries._
 

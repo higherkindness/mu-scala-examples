@@ -18,27 +18,23 @@ package higherkindness.mu.rpc.healthcheck.client
 
 import cats.effect.{ExitCode, IO, IOApp}
 import higherkindness.mu.rpc.healthcheck.client.fs2.ClientProgramFS2
-import higherkindness.mu.rpc.healthcheck.client.monix.ClientProgramMonix
 
 object ClientApp extends IOApp {
 
+  import fs2.gclientFS2.implicits._
+
   override def run(args: List[String]): IO[ExitCode] = {
 
-    val (stream, mode, who) = args.length match {
-      case 2 => (args.head, args(1), "")
-      case 3 => (args.head, args(1), args(2))
-      case _ => ("", "", "")
+    val (mode, who) = args.length match {
+      case 1 => (args(0), "")
+      case 2 => (args(0), args(1))
+      case _ => ("", "")
     }
 
-    val clientProgram: IO[Unit] = stream match {
-      case "fs2" =>
-        import fs2.gclientFS2.implicits._
-        ClientProgramFS2.clientProgramIO(who, mode)
-      case "monix" =>
-        import monix.gclientMonix.implicits._
-        ClientProgramMonix.clientProgramIO(who, mode)
-    }
-    clientProgram.attempt.map(_.fold(_ => ExitCode.Error, _ => ExitCode.Success))
+    ClientProgramFS2
+      .clientProgramIO(who, mode)
+      .attempt
+      .map(_.fold(_ => ExitCode.Error, _ => ExitCode.Success))
 
   }
 

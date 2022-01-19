@@ -22,19 +22,19 @@ import example.seed.client.common.models._
 import example.seed.client.process._
 import example.seed.config.ConfigService
 import fs2.Stream
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import pureconfig.generic.auto._
 
-abstract class ClientBoot[F[_]: ConcurrentEffect: ContextShift: Timer] {
+abstract class ClientBoot[F[_]: Async] {
 
-  def avroPeopleServiceClient(host: String, port: Int)(
-      implicit L: Logger[F]
+  def avroPeopleServiceClient(host: String, port: Int)(implicit
+      L: Logger[F]
   ): Stream[F, AvroPeopleServiceClient[F]] =
     AvroPeopleServiceClient.createClient(host, port)
 
-  def protoPeopleServiceClient(host: String, port: Int)(
-      implicit L: Logger[F]
+  def protoPeopleServiceClient(host: String, port: Int)(implicit
+      L: Logger[F]
   ): Stream[F, ProtoPeopleServiceClient[F]] =
     ProtoPeopleServiceClient.createClient(host, port)
 

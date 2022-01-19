@@ -25,8 +25,8 @@ import examples.todolist.client.clients.TagClient
 import examples.todolist.protocol._
 import examples.todolist.protocol.Protocols._
 import higherkindness.mu.rpc.protocol.Empty
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 class TagClientHandler[F[_]: Sync](client: Resource[F, TagRpcService[F]]) extends TagClient[F] {
 

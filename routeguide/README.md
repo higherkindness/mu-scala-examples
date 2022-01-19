@@ -18,12 +18,6 @@ Run client interpreting to `cats.effect.IO`:
 sbt "project routeguide-client" runClientIO
 ```
 
-Run client interpreting to `monix.eval.Task`:
-
-```bash
-sbt "project routeguide-client" runClientTask
-```
-
 [comment]: # (Start Copyright)
 # Copyright
 

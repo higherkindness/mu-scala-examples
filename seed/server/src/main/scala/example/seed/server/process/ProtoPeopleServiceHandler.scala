@@ -16,18 +16,17 @@
 
 package example.seed.server.process
 
-import cats.effect.{Sync, Timer}
+import cats.effect._
 import cats.syntax.applicative._
 import cats.syntax.functor._
 import example.seed.protocol.proto.people._
 import example.seed.protocol.proto.services.PeopleService
 import fs2._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
 import scala.concurrent.duration._
 
-class ProtoPeopleServiceHandler[F[_]: Timer](implicit F: Sync[F], L: Logger[F])
-    extends PeopleService[F] {
+class ProtoPeopleServiceHandler[F[_]](implicit F: Async[F], L: Logger[F]) extends PeopleService[F] {
 
   val serviceName = "ProtoPeopleService"
 

@@ -19,7 +19,6 @@ package com.example
 import cats.data.Kleisli
 import cats.implicits._
 import cats.effect._
-import cats.effect.Console.io._
 import com.example.hello._
 import higherkindness.mu.rpc._
 import fs2._
@@ -27,7 +26,7 @@ import natchez._
 
 object Client extends IOApp {
 
-  def entryPoint[F[_]: Sync]: Resource[F, EntryPoint[F]] = {
+  def entryPoint[F[_]: Async]: Resource[F, EntryPoint[F]] = {
     import natchez.jaeger.Jaeger
     import io.jaegertracing.Configuration.SamplerConfiguration
     import io.jaegertracing.Configuration.ReporterConfiguration
@@ -49,8 +48,8 @@ object Client extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] =
     for {
-      _    <- putStr("Please enter your name: ")
-      name <- readLn
+      _    <- IO.println("Please enter your name: ")
+      name <- IO.readLine
       response <- serviceClient.use { client =>
         entrypointResource.use { ep =>
           // Send a few requests just to warm up the JVM.
@@ -64,17 +63,17 @@ object Client extends IOApp {
           // To try a client-streaming call, comment out the lines above
           // and uncomment the line below
 
-          //sendClientStreamingRequest(client, ep, name)
+          // sendClientStreamingRequest(client, ep, name)
 
           // Or try a server-streaming call:
-          //sendServerStreamingRequest(client, ep, name)
+          // sendServerStreamingRequest(client, ep, name)
 
           // Or a bidirectional streaming call:
-          //sendBidirectionalStreamingRequest(client, ep, name)
+          // sendBidirectionalStreamingRequest(client, ep, name)
         }
       }
       serverMood = if (response.happy) "happy" else "unhappy"
-      _ <- putStrLn(s"The $serverMood server says '${response.greeting}'")
+      _ <- IO.println(s"The $serverMood server says '${response.greeting}'")
     } yield ExitCode.Success
 
   def sendUnaryRequest(

@@ -19,19 +19,17 @@ package example.routeguide.server.handlers
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.UnaryOperator
 
-import cats.syntax.applicative._
-import cats.effect.{Async, ConcurrentEffect, Effect}
+import cats.effect._
+import cats.syntax.all._
 import example.routeguide.protocol.service._
 import example.routeguide.common.Utils._
-import monix.eval.Task
-import monix.reactive.Observable
+import fs2.Stream
 import org.log4s._
 
 import scala.concurrent.duration.NANOSECONDS
 import example.routeguide.common.PointNotFoundError
 
-class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
-    extends RouteGuideService[F] {
+class RouteGuideServiceHandler[F[_]: Async] extends RouteGuideService[F] {
 
   // AtomicReference as an alternative to ConcurrentMap<Point, List<RouteNote>>?
   private val routeNotes: AtomicReference[Map[Point, List[RouteNote]]] =
@@ -45,7 +43,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
       point.findFeatureIn(features)
     }
 
-  override def listFeatures(rectangle: Rectangle): F[Observable[Feature]] = {
+  override def listFeatures(rectangle: Rectangle): F[Stream[F, Feature]] = {
     val left = Math.min(
       rectangle.lo.getOrElse(throw new PointNotFoundError("rectangle lo not found")).longitude,
       rectangle.hi.getOrElse(throw new PointNotFoundError("rectangle hi not found")).longitude
@@ -63,7 +61,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
       rectangle.hi.getOrElse(throw new PointNotFoundError("rectangle hi not found")).latitude
     )
 
-    val observable = Observable.fromIterable(
+    val stream = Stream.fromIterator(
       features.filter { feature =>
         val lat =
           feature.location.getOrElse(throw new PointNotFoundError("location not found")).latitude
@@ -71,15 +69,16 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
           feature.location.getOrElse(throw new PointNotFoundError("location not found")).longitude
         feature.valid && lon >= left && lon <= right && lat >= bottom && lat <= top
 
-      }
+      }.iterator,
+      1
     )
 
     logger.info(s"Listing features for $rectangle ...")
 
-    observable.pure[F]
+    stream.pure[F]
   }
 
-  override def recordRoute(points: Observable[Point]): F[RouteSummary] =
+  override def recordRoute(points: Stream[F, Point]): F[RouteSummary] =
     // For each point after the first, add the incremental distance from the previous point to
     // the total distance value. We're starting
 
@@ -87,7 +86,7 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
     // the source, going left to right and returns a new `Task` that
     // upon evaluation will eventually emit the final result.
     points
-      .foldLeftL((RouteSummary(0, 0, 0, 0), None: Option[Point], System.nanoTime())) {
+      .fold((RouteSummary(0, 0, 0, 0), None: Option[Point], System.nanoTime())) {
         case ((summary, previous, startTime), point) =>
           val feature  = point.findFeatureIn(features)
           val distance = previous.map(calcDistance(_, point)) getOrElse 0
@@ -100,23 +99,26 @@ class RouteGuideServiceHandler[F[_]: ConcurrentEffect](implicit E: Effect[Task])
           (updated, Some(point), startTime)
       }
       .map(_._1)
-      .toAsync[F]
+      .compile
+      .last
+      .flatMap(_.fold(new RuntimeException("Empty stream").raiseError[F, RouteSummary])(_.pure[F]))
 
-  override def routeChat(routeNotes: Observable[RouteNote]): F[Observable[RouteNote]] =
+  override def routeChat(routeNotes: Stream[F, RouteNote]): F[Stream[F, RouteNote]] =
     routeNotes
       .flatMap { note: RouteNote =>
         logger.info(s"Got route note $note, adding it... ")
 
         addNote(note)
-        Observable.fromIterable(
+        Stream.fromIterator(
           getOrCreateNotes(
             note.location.getOrElse(throw new PointNotFoundError("location not found"))
-          )
+          ).iterator,
+          1
         )
       }
-      .onErrorHandle { e =>
+      .handleErrorWith { e =>
         logger.warn(s"routeChat cancelled $e")
-        throw e
+        e.raiseError[Stream[F, *], RouteNote]
       }
       .pure[F]
 

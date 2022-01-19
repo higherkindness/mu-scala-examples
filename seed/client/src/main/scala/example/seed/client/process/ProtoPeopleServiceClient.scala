@@ -19,15 +19,13 @@ package example.seed.client.process
 import java.net.InetAddress
 
 import cats.effect._
-import cats.syntax.apply._
-import cats.syntax.flatMap._
-import cats.syntax.functor._
+import cats.syntax.all._
 import example.seed.protocol.proto.people._
 import example.seed.protocol.proto.services._
 import fs2._
 import higherkindness.mu.rpc.ChannelForAddress
 import higherkindness.mu.rpc.channel.{ManagedChannelInterpreter, UsePlaintext}
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import io.grpc.{CallOptions, ManagedChannel}
 import example.seed.client.common.PersonNotFoundError
 
@@ -45,7 +43,7 @@ object ProtoPeopleServiceClient {
 
   def apply[F[_]](
       client: PeopleService[F]
-  )(implicit F: Effect[F], L: Logger[F], T: Timer[F]): ProtoPeopleServiceClient[F] =
+  )(implicit F: Async[F], L: Logger[F]): ProtoPeopleServiceClient[F] =
     new ProtoPeopleServiceClient[F] {
 
       val serviceName = "ProtoPeopleClient"
@@ -62,7 +60,7 @@ object ProtoPeopleServiceClient {
         def requestStream: Stream[F, PeopleRequest] =
           Stream.iterateEval(PeopleRequest("")) { _ =>
             val req = PeopleRequest(Random.nextPrintableChar().toString)
-            T.sleep(2.seconds) *> L.info(s"$serviceName Stream Request: $req").as(req)
+            F.sleep(2.seconds) *> L.info(s"$serviceName Stream Request: $req").as(req)
           }
 
         for {
@@ -73,12 +71,13 @@ object ProtoPeopleServiceClient {
 
     }
 
-  def createClient[F[_]: ContextShift: Logger: Timer](hostname: String, port: Int)(
-      implicit F: ConcurrentEffect[F]
+  def createClient[F[_]: Async: Logger](
+      hostname: String,
+      port: Int
   ): fs2.Stream[F, ProtoPeopleServiceClient[F]] = {
 
     val channel: F[ManagedChannel] =
-      F.delay(InetAddress.getByName(hostname).getHostAddress).flatMap { ip =>
+      Async[F].delay(InetAddress.getByName(hostname).getHostAddress).flatMap { ip =>
         val channelFor = ChannelForAddress(ip, port)
         new ManagedChannelInterpreter[F](channelFor, List(UsePlaintext())).build
       }
