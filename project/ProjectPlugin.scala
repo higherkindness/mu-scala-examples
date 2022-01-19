@@ -109,8 +109,8 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val exampleSeedProtobufProtocolSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
-         mu("mu-rpc-fs2"), 
-         mu("mu-rpc-service")
+        mu("mu-rpc-fs2"),
+        mu("mu-rpc-service")
       ),
       muSrcGenIdlType := IdlType.Proto,
       muSrcGenIdiomaticEndpoints := true
@@ -118,7 +118,7 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val exampleSeedAvroProtocolSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
-         mu("mu-rpc-service")
+        mu("mu-rpc-service")
       ),
       muSrcGenIdlType := IdlType.Avro,
       muSrcGenIdiomaticEndpoints := true
@@ -156,7 +156,7 @@ object ProjectPlugin extends AutoPlugin {
         mu("mu-rpc-server"),
         mu("mu-rpc-client-netty"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j" % "slf4j-simple" % "1.7.30"
+        "org.slf4j"    % "slf4j-simple"    % "1.7.33"
       ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
     )
 
@@ -165,16 +165,16 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         mu("mu-rpc-server"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j" % "slf4j-simple" % "1.7.30"
+        "org.slf4j"    % "slf4j-simple"    % "1.7.33"
       ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
     )
 
     lazy val tracingClientSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
         mu("mu-rpc-client-netty"),
-        "dev.profunktor" %% "console4cats" % "0.8.1",
-        "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j" % "slf4j-simple" % "1.7.30"
+        "dev.profunktor" %% "console4cats"   % "0.8.1",
+        "org.tpolecat"   %% "natchez-jaeger" % V.natchez,
+        "org.slf4j"      % "slf4j-simple"    % "1.7.33"
       )
     )
 
@@ -197,7 +197,10 @@ object ProjectPlugin extends AutoPlugin {
       ),
       scalaVersion := V.scala213,
       scalacOptions --= Seq("-Xfuture", "-Xfatal-warnings"),
-      scalacOptions ++= Seq("-Xlint:-missing-interpolator", "-Xlint:-byname-implicit"), // per https://github.com/scala/bug/issues/12072, we need to disable the warnings from doobie
+      scalacOptions ++= Seq(
+        "-Xlint:-missing-interpolator",
+        "-Xlint:-byname-implicit"
+      ), // per https://github.com/scala/bug/issues/12072, we need to disable the warnings from doobie
       addCompilerPlugin(
         "org.typelevel" %% "kind-projector" % V.kindProjector cross CrossVersion.full
       ),
