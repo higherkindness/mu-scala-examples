@@ -29,8 +29,8 @@ object ClientProgram {
   def pongProgram[M[_]: Monad](implicit client: PingPongClient[M]): M[Unit] =
     client.ping()
 
-  def exampleProgram[M[_]: Monad](
-      implicit tagClient: TagClient[M],
+  def exampleProgram[M[_]: Monad](implicit
+      tagClient: TagClient[M],
       todoListClient: TodoListClient[M],
       todoItemClient: TodoItemClient[M]
   ): M[Unit] =

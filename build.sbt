@@ -97,7 +97,7 @@ lazy val seed = project
     `seed-protobuf-protocol`,
     `seed-client`,
     `seed-server`
-  ) 
+  )
   .disablePlugins(SrcGenPlugin)
 
 ////////////////////

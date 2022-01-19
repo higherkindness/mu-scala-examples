@@ -30,8 +30,8 @@ trait ConfigService[F[_]] {
 object ConfigService {
   def apply[F[_]: Effect]: ConfigService[F] = new ConfigService[F] {
 
-    override def serviceConfig[Config](
-        implicit reader: Derivation[ConfigReader[Config]]
+    override def serviceConfig[Config](implicit
+        reader: Derivation[ConfigReader[Config]]
     ): F[Config] =
       Effect[F].fromEither(
         ConfigSource.default

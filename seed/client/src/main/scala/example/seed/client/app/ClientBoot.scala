@@ -28,13 +28,13 @@ import pureconfig.generic.auto._
 
 abstract class ClientBoot[F[_]: ConcurrentEffect: ContextShift: Timer] {
 
-  def avroPeopleServiceClient(host: String, port: Int)(
-      implicit L: Logger[F]
+  def avroPeopleServiceClient(host: String, port: Int)(implicit
+      L: Logger[F]
   ): Stream[F, AvroPeopleServiceClient[F]] =
     AvroPeopleServiceClient.createClient(host, port)
 
-  def protoPeopleServiceClient(host: String, port: Int)(
-      implicit L: Logger[F]
+  def protoPeopleServiceClient(host: String, port: Int)(implicit
+      L: Logger[F]
   ): Stream[F, ProtoPeopleServiceClient[F]] =
     ProtoPeopleServiceClient.createClient(host, port)
 

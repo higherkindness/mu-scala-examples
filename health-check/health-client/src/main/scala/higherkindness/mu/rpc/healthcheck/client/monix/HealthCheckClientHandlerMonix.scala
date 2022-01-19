@@ -26,7 +26,8 @@ import higherkindness.mu.rpc.protocol.Empty
 import io.chrisdavenport.log4cats.Logger
 
 class HealthCheckClientHandlerMonix[F[_]: Effect](client: Resource[F, HealthCheckServiceMonix[F]])(
-    implicit s: Scheduler,
+    implicit
+    s: Scheduler,
     logger: Logger[F]
 ) {
 

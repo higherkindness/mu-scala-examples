@@ -30,8 +30,8 @@ import example.routeguide.common.PointNotFoundError
 
 import scala.concurrent.duration._
 
-class RouteGuideClientHandler[F[_]: ConcurrentEffect](
-    implicit client: Resource[F, RouteGuideService[F]],
+class RouteGuideClientHandler[F[_]: ConcurrentEffect](implicit
+    client: Resource[F, RouteGuideService[F]],
     E: Effect[Task]
 ) extends RouteGuideClient[F] {
 
@@ -50,12 +50,11 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
               s"Found no feature at ${feature.location.fold("no location found, either")(_.pretty)}"
             )
         }
-        .handleErrorWith {
-          case e: StatusRuntimeException =>
-            Async[F].delay(logger.warn(s"RPC failed:${e.getStatus} $e")) *> ApplicativeError[
-              F,
-              Throwable
-            ].raiseError(e)
+        .handleErrorWith { case e: StatusRuntimeException =>
+          Async[F].delay(logger.warn(s"RPC failed:${e.getStatus} $e")) *> ApplicativeError[
+            F,
+            Throwable
+          ].raiseError(e)
         }
 
   override def listFeatures(lowLat: Int, lowLon: Int, hiLat: Int, hiLon: Int): F[Unit] =
@@ -75,14 +74,12 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
             )
             .flatten
             .zipWithIndex
-            .map {
-              case (feature, i) =>
-                logger.info(s"Result #$i: $feature")
+            .map { case (feature, i) =>
+              logger.info(s"Result #$i: $feature")
             }
-            .onErrorHandle {
-              case e: StatusRuntimeException =>
-                logger.warn(s"RPC failed: ${e.getStatus} $e")
-                throw e
+            .onErrorHandle { case e: StatusRuntimeException =>
+              logger.warn(s"RPC failed: ${e.getStatus} $e")
+              throw e
             }
             .completedL
             .toAsync[F]
@@ -154,10 +151,9 @@ class RouteGuideClientHandler[F[_]: ConcurrentEffect](
                   s"${note.location.getOrElse(throw new PointNotFoundError("location not found")).latitude}, ${note.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
               )
             }
-            .onErrorHandle {
-              case e: Throwable =>
-                logger.warn(s"RouteChat Failed: ${Status.fromThrowable(e)} $e")
-                throw e
+            .onErrorHandle { case e: Throwable =>
+              logger.warn(s"RouteChat Failed: ${Status.fromThrowable(e)} $e")
+              throw e
             }
             .completedL
             .toAsync[F]

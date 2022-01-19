@@ -53,8 +53,8 @@ object AvroPeopleServiceClient {
 
     }
 
-  def createClient[F[_]: ContextShift: Logger](hostname: String, port: Int)(
-      implicit F: ConcurrentEffect[F]
+  def createClient[F[_]: ContextShift: Logger](hostname: String, port: Int)(implicit
+      F: ConcurrentEffect[F]
   ): fs2.Stream[F, AvroPeopleServiceClient[F]] = {
 
     val channel: F[ManagedChannel] =

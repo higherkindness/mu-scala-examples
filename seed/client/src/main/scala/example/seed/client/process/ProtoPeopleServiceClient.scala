@@ -73,8 +73,8 @@ object ProtoPeopleServiceClient {
 
     }
 
-  def createClient[F[_]: ContextShift: Logger: Timer](hostname: String, port: Int)(
-      implicit F: ConcurrentEffect[F]
+  def createClient[F[_]: ContextShift: Logger: Timer](hostname: String, port: Int)(implicit
+      F: ConcurrentEffect[F]
   ): fs2.Stream[F, ProtoPeopleServiceClient[F]] = {
 
     val channel: F[ManagedChannel] =
