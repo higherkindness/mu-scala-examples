@@ -135,7 +135,7 @@ object ProjectPlugin extends AutoPlugin {
         mu("mu-rpc-server"),
         mu("mu-rpc-client-netty"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.30"
+        "org.slf4j"     % "slf4j-simple"   % "1.7.33"
       ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
     )
 
@@ -144,7 +144,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         mu("mu-rpc-server"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.30"
+        "org.slf4j"     % "slf4j-simple"   % "1.7.33"
       ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
     )
 
@@ -152,7 +152,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         mu("mu-rpc-client-netty"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.30"
+        "org.slf4j"     % "slf4j-simple"   % "1.7.33"
       )
     )
 
