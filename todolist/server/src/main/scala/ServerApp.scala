@@ -17,7 +17,7 @@
 package examples.todolist.server
 
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 import examples.todolist.protocol.Protocols._
 import examples.todolist.server.implicits._
 import higherkindness.mu.rpc.config.server.BuildServerFromConfig

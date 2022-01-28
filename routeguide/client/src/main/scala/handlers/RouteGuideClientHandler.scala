@@ -18,7 +18,7 @@ package example.routeguide.client.handlers
 
 import cats._
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 import example.routeguide.client.RouteGuideClient
 import fs2.Stream
 import io.grpc.{Status, StatusRuntimeException}

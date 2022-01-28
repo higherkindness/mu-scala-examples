@@ -18,7 +18,7 @@ package higherkindness.mu.rpc.healthcheck.client.fs2
 
 import fs2.Stream
 import cats.effect.{Async, Resource}
-import cats.implicits._
+import cats.syntax.all._
 import higherkindness.mu.rpc.healthcheck.fs2.serviceFS2.HealthCheckServiceFS2
 import higherkindness.mu.rpc.healthcheck.unary.handler._
 import higherkindness.mu.rpc.protocol.Empty

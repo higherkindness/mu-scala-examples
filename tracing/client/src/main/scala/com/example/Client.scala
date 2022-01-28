@@ -17,7 +17,6 @@
 package com.example
 
 import cats.data.Kleisli
-import cats.implicits._
 import cats.effect._
 import com.example.hello._
 import higherkindness.mu.rpc._
