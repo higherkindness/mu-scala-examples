@@ -17,7 +17,7 @@
 package com.example
 
 import fs2._
-import cats.implicits._
+import cats.syntax.all._
 import cats.effect.Async
 import com.example.hello._
 import com.example.happy._

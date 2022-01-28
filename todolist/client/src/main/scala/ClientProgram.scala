@@ -16,7 +16,7 @@
 
 package examples.todolist.client
 
-import cats.implicits._
+import cats.syntax.all._
 import cats.Monad
 import examples.todolist.client.clients._
 import examples.todolist.protocol.Protocols._

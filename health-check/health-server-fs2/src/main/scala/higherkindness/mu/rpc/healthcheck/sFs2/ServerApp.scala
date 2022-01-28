@@ -20,7 +20,6 @@ import cats.effect.IO
 import cats.effect.kernel.Resource
 import higherkindness.mu.rpc.server.{AddService, GrpcServer}
 import gserver.implicits._
-import cats.instances.list._
 import cats.syntax.traverse._
 import higherkindness.mu.rpc.healthcheck.fs2.handler.HealthServiceFS2
 import higherkindness.mu.rpc.healthcheck.fs2.serviceFS2.HealthCheckServiceFS2

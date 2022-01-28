@@ -17,7 +17,7 @@
 package com.example
 
 import cats._
-import cats.implicits._
+import cats.syntax.all._
 import com.example.happy._
 import natchez._
 
