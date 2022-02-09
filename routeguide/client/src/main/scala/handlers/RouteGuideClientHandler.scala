@@ -42,7 +42,7 @@ class RouteGuideClientHandler[F[_]: Async](implicit
         .map { feature: Feature =>
           if (feature.valid)
             logger.info(s"Found feature called '${feature.name}' at ${feature.location
-              .fold("no location found, actually")(_.pretty)}")
+                .fold("no location found, actually")(_.pretty)}")
           else
             logger.info(
               s"Found no feature at ${feature.location.fold("no location found, either")(_.pretty)}"
@@ -139,8 +139,8 @@ class RouteGuideClientHandler[F[_]: Async](implicit
                     logger.info(
                       s"Sending message '${routeNote.message}' at " +
                         s"${routeNote.location
-                          .getOrElse(throw new PointNotFoundError("location not found"))
-                          .latitude}, ${routeNote.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
+                            .getOrElse(throw new PointNotFoundError("location not found"))
+                            .latitude}, ${routeNote.location.getOrElse(throw new PointNotFoundError("location not found")).longitude}"
                     )
                     routeNote
                   }
