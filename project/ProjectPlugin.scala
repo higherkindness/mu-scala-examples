@@ -12,7 +12,7 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     lazy val V = new {
-      val catsEffect: String    = "3.3.4"
+      val catsEffect: String    = "3.3.5"
       val circe: String         = "0.14.1"
       val doobie: String        = "1.0.0-RC2"
       val fs2: String           = "3.2.4"
@@ -135,7 +135,7 @@ object ProjectPlugin extends AutoPlugin {
         mu("mu-rpc-server"),
         mu("mu-rpc-client-netty"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.35"
+        "org.slf4j"     % "slf4j-simple"   % "1.7.36"
       ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
     )
 
@@ -144,7 +144,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         mu("mu-rpc-server"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.35"
+        "org.slf4j"     % "slf4j-simple"   % "1.7.36"
       ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
     )
 
@@ -152,7 +152,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         mu("mu-rpc-client-netty"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.35"
+        "org.slf4j"     % "slf4j-simple"   % "1.7.36"
       )
     )
 
