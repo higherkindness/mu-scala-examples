@@ -12,7 +12,7 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     lazy val V = new {
-      val catsEffect: String    = "3.3.5"
+      val catsEffect: String    = "3.3.6"
       val circe: String         = "0.14.1"
       val doobie: String        = "1.0.0-RC2"
       val fs2: String           = "3.2.5"
