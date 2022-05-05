@@ -28,7 +28,11 @@ object Client extends IOApp {
 
   def entryPoint[F[_]: Sync]: Resource[F, EntryPoint[F]] = {
     import natchez.jaeger.Jaeger
-    import io.jaegertracing.Configuration.{SamplerConfiguration, ReporterConfiguration, SenderConfiguration}
+    import io.jaegertracing.Configuration.{
+      SamplerConfiguration,
+      ReporterConfiguration,
+      SenderConfiguration
+    }
     Jaeger.entryPoint[F]("my-client-application") { config =>
       Sync[F].delay {
         config
@@ -36,9 +40,8 @@ object Client extends IOApp {
           .withReporter(
             new ReporterConfiguration()
               .withSender(
-                new SenderConfiguration().withEndpoint("http://localhost:14268/api/traces"
+                new SenderConfiguration().withEndpoint("http://localhost:14268/api/traces")
               )
-            )
           )
           .getTracer
       }

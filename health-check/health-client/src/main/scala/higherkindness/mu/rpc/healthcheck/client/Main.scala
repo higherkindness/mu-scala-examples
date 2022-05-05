@@ -31,10 +31,10 @@ object Main extends IOApp {
   case class Args(mode: Mode, serviceName: String)
 
   implicit val logger: SelfAwareStructuredLogger[IO] =
-      Slf4jLogger.getLogger
+    Slf4jLogger.getLogger
 
-  val channelFor: ChannelFor = ChannelForAddress("localhost", 50051)
-  val client: Resource[IO, Health[IO]] = Health.client[IO](channelFor)
+  val channelFor: ChannelFor                = ChannelForAddress("localhost", 50051)
+  val client: Resource[IO, Health[IO]]      = Health.client[IO](channelFor)
   val handler: HealthCheckClientHandler[IO] = new HealthCheckClientHandler[IO](client)
 
   override def run(rawArgs: List[String]): IO[ExitCode] =
@@ -44,11 +44,11 @@ object Main extends IOApp {
     } yield ExitCode.Success
 
   def parseArgs(args: List[String]): IO[Args] = args match {
-    case "check" :: Nil => IO.pure(Args(Check, ""))
+    case "check" :: Nil                => IO.pure(Args(Check, ""))
     case "check" :: serviceName :: Nil => IO.pure(Args(Check, serviceName))
-    case "watch" :: Nil => IO.pure(Args(Watch, ""))
+    case "watch" :: Nil                => IO.pure(Args(Watch, ""))
     case "watch" :: serviceName :: Nil => IO.pure(Args(Watch, serviceName))
-    case _ => IO.raiseError(new Exception(s"Invalid arguments: $args"))
+    case _                             => IO.raiseError(new Exception(s"Invalid arguments: $args"))
   }
 
   def doStuff(args: Args): IO[Unit] = args.mode match {

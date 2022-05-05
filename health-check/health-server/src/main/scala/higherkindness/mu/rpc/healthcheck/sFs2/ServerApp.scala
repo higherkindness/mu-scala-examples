@@ -36,7 +36,7 @@ object ServerApp extends IOApp.Simple {
 
     def randomStatus(random: Random[IO]): IO[ServingStatus] =
       random.nextBoolean.map {
-        case true => ServingStatus.SERVING
+        case true  => ServingStatus.SERVING
         case false => ServingStatus.NOT_SERVING
       }
 

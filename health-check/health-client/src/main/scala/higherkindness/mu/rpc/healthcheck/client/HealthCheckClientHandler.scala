@@ -22,15 +22,16 @@ import cats.syntax.all._
 import grpc.health.v1.health.{Health, HealthCheckRequest}
 import org.typelevel.log4cats.Logger
 
-class HealthCheckClientHandler[F[_]: Async](client: Resource[F, Health[F]])(
-    implicit logger: Logger[F]
+class HealthCheckClientHandler[F[_]: Async](client: Resource[F, Health[F]])(implicit
+    logger: Logger[F]
 ) {
 
   def check(serviceName: String): F[Unit] =
     client.use(c =>
-      c.Check(HealthCheckRequest(serviceName)).flatMap(response =>
-        logger.info(s"Service '${serviceName}' has status ${response.status.name}")
-      )
+      c.Check(HealthCheckRequest(serviceName))
+        .flatMap(response =>
+          logger.info(s"Service '${serviceName}' has status ${response.status.name}")
+        )
     )
 
   def watch(serviceName: String): F[Unit] =
