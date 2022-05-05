@@ -83,7 +83,10 @@ lazy val `seed-protobuf-protocol` = project
 
 lazy val `seed-server` = project
   .in(file("seed/server"))
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
+  .settings(
+    fork := true,
+    libraryDependencies ++= Seq(mu("mu-rpc-server"))
+  )
   .dependsOn(`seed-avro-protocol`, `seed-protobuf-protocol`, `seed-config`)
   .settings(exampleSeedLogSettings)
 
@@ -146,7 +149,10 @@ lazy val `todolist-server` = project
   .dependsOn(`todolist-runtime`)
   .dependsOn(`todolist-model`)
   .dependsOn(`todolist-persistence`)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-server"), mu("mu-config")))
+  .settings(
+    fork := true,
+    libraryDependencies ++= Seq(mu("mu-rpc-server"), mu("mu-config"))
+  )
   .settings(exampleTodolistCommonSettings)
 
 lazy val todolist = project
