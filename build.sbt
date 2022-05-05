@@ -37,20 +37,11 @@ lazy val `routeguide-server` = project
     libraryDependencies ++= Seq(mu("mu-rpc-server"))
   )
 
-// TODO simplify this, no need for a special command and separate source dir anymore
 lazy val `routeguide-client` = project
   .in(file("routeguide/client"))
   .dependsOn(`routeguide-common`)
   .dependsOn(`routeguide-runtime`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty")))
-  .settings(
-    Compile / unmanagedSourceDirectories ++= Seq(
-      baseDirectory.value / "src" / "main" / "scala-io"
-    )
-  )
-  .settings(
-    addCommandAlias("runClientIO", "runMain example.routeguide.client.io.ClientAppIO")
-  )
 
 lazy val routeguide = project
   .aggregate(

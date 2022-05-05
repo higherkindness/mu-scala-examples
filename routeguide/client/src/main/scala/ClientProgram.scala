@@ -31,7 +31,7 @@ trait RouteGuideClient[F[_]] {
 
 object ClientProgram {
 
-  def clientProgram[M[_]: Monad](implicit APP: RouteGuideClient[M]): M[Unit] = {
+  def clientProgram[F[_]: Monad](implicit APP: RouteGuideClient[F]): F[Unit] = {
     for {
       // Looking for a valid feature
       _ <- APP.getFeature(409146138, -746188906)

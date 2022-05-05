@@ -12,10 +12,10 @@ Run server:
 sbt routeguide-server/run
 ```
 
-Run client interpreting to `cats.effect.IO`:
+Run client:
 
 ```bash
-sbt "project routeguide-client" runClientIO
+sbt routeguide-client/run
 ```
 
 [comment]: # (Start Copyright)

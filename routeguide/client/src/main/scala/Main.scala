@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package example.routeguide.client.io
+package example.routeguide.client
 
-import cats.effect.{IO, Resource}
-import example.routeguide.client.handlers.RouteGuideClientHandler
-import example.routeguide.protocol.service._
-import example.routeguide.runtime._
-import example.routeguide.client.runtime._
+import cats.effect.IO
+import org.log4s._
+import example.routeguide.client.implicits._
+import example.routeguide.client.ClientProgram._
 
-trait ClientIOImplicits extends RouteGuide with ClientConf {
+object Main {
 
-  implicit val routeGuideServiceClient: Resource[IO, RouteGuideService[IO]] =
-    RouteGuideService.client[IO](channelFor)
+  val logger = getLogger
 
-  implicit val routeGuideClientHandler: RouteGuideClientHandler[IO] =
-    new RouteGuideClientHandler[IO]
+  def main(args: Array[String]): Unit = {
+    logger.info(s"${Thread.currentThread().getName} Starting client, interpreting to Future ...")
+
+    clientProgram[IO].unsafeRunSync()
+
+    logger.info(s"${Thread.currentThread().getName} Finishing program interpretation ...")
+  }
+
 }
-object implicits extends ClientIOImplicits
