@@ -7,21 +7,28 @@ In two different terminals, run (in order of appearance):
 * Running the server:
 
 ```bash
-sbt health-server-fs2/run
+sbt health-server/run
 ```
 
-* Running the client:
+* Running the client to check the status of the server as a whole:
 
 ```bash
-sbt "health-client/run simple"
+sbt "health-client/run check"
+```
+
+or to check the status of service `A`:
+
+```bash
+sbt "health-client/run check A"
 ```
 
 ### Expected result
-Client terminal shows status checking. 
+
+The client program logs the service's status to stdout.
 
 ## Run streaming example
 
-In four different terminals, run (in order of appearance):
+In two different terminals, run (in order of appearance):
 
 * Running the server:
 
@@ -29,27 +36,15 @@ In four different terminals, run (in order of appearance):
 sbt health-server-fs2/run
 ```
 
-* Running the client (for watching "example1" service to update health status):
+* Running the client to watch the status of service `A`:
 
 ```bash
-sbt "health-client/run watch 1"
-```
-
-* Running the client (for watching "example2" service to update health status):
-
-```bash
-sbt "health-client/run watch 2"
-```
-
-* Running the client (for updating health status for example 1):
-
-```bash
-sbt "health-client/run update 1"
+sbt "health-client/run watch A"
 ```
 
 ### Expected result
 
-Terminal two shows updated status. 
+The client program logs a stream of status updates to stdout.
 
 [comment]: # (Start Copyright)
 # Copyright

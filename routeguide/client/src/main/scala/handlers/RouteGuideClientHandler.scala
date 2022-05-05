@@ -83,8 +83,8 @@ class RouteGuideClientHandler[F[_]: Async](implicit
             .drain
         }
 
-  override def recordRoute(features: List[Feature], numPoints: Int): F[Unit] = {
-    def takeN: List[Feature] = scala.util.Random.shuffle(features).take(numPoints)
+  override def recordRoute(features: Seq[Feature], numPoints: Int): F[Unit] = {
+    def takeN: Seq[Feature] = scala.util.Random.shuffle(features).take(numPoints)
 
     val points = takeN.map(_.location)
     Async[F].delay(
@@ -107,8 +107,8 @@ class RouteGuideClientHandler[F[_]: Async](implicit
         )
         .map { summary: RouteSummary =>
           logger.info(
-            s"Finished trip with ${summary.point_count} points. Passed ${summary.feature_count} features. " +
-              s"Travelled ${summary.distance} meters. It took ${summary.elapsed_time} seconds."
+            s"Finished trip with ${summary.pointCount} points. Passed ${summary.featureCount} features. " +
+              s"Travelled ${summary.distance} meters. It took ${summary.elapsedTime} seconds."
           )
         }
         .handleErrorWith { e: Throwable =>

@@ -20,19 +20,26 @@ import cats.data.Kleisli
 import cats.effect._
 import com.example.hello._
 import higherkindness.mu.rpc._
+import higherkindness.mu.rpc.internal.tracing.implicits.clientContext
 import fs2._
 import natchez._
 
 object Client extends IOApp {
 
-  def entryPoint[F[_]: Async]: Resource[F, EntryPoint[F]] = {
+  def entryPoint[F[_]: Sync]: Resource[F, EntryPoint[F]] = {
     import natchez.jaeger.Jaeger
-    import io.jaegertracing.Configuration.SamplerConfiguration
-    import io.jaegertracing.Configuration.ReporterConfiguration
-    Jaeger.entryPoint[F]("my-client-application") { c =>
+    import io.jaegertracing.Configuration.{SamplerConfiguration, ReporterConfiguration, SenderConfiguration}
+    Jaeger.entryPoint[F]("my-client-application") { config =>
       Sync[F].delay {
-        c.withSampler(new SamplerConfiguration().withType("const").withParam(1))
-          .withReporter(ReporterConfiguration.fromEnv)
+        config
+          .withSampler(new SamplerConfiguration().withType("const").withParam(1))
+          .withReporter(
+            new ReporterConfiguration()
+              .withSender(
+                new SenderConfiguration().withEndpoint("http://localhost:14268/api/traces"
+              )
+            )
+          )
           .getTracer
       }
     }
@@ -41,7 +48,7 @@ object Client extends IOApp {
   val channelFor: ChannelFor = ChannelForAddress("localhost", 12345)
 
   val serviceClient: Resource[IO, Greeter[Kleisli[IO, Span[IO], *]]] =
-    Greeter.tracingClient[IO](channelFor)
+    Greeter.contextClient[IO, Span[IO]](channelFor)
 
   val entrypointResource: Resource[IO, EntryPoint[IO]] = entryPoint
 

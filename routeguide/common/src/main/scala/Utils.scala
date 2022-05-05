@@ -25,7 +25,7 @@ object Utils {
 
   val logger = getLogger
 
-  val features: List[Feature] = {
+  val features: Seq[Feature] = {
     logger.info("###### Loading route guide db...")
     io.circe.parser.decode[FeatureDatabase](
       Source
@@ -64,7 +64,7 @@ object Utils {
      * @return
      *   The feature, an invalid feature is returned in case the location is not found.
      */
-    def findFeatureIn(features: List[Feature]): Feature =
+    def findFeatureIn(features: Seq[Feature]): Feature =
       features
         .find(f =>
           f.location

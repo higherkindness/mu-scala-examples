@@ -21,6 +21,7 @@ import cats.effect._
 import com.example.hello._
 import com.example.happy._
 import higherkindness.mu.rpc._
+import higherkindness.mu.rpc.internal.tracing.implicits._
 import higherkindness.mu.rpc.server._
 import natchez._
 
@@ -28,12 +29,18 @@ object ServerA extends IOApp {
 
   def entryPoint[F[_]: Sync]: Resource[F, EntryPoint[F]] = {
     import natchez.jaeger.Jaeger
-    import io.jaegertracing.Configuration.SamplerConfiguration
-    import io.jaegertracing.Configuration.ReporterConfiguration
-    Jaeger.entryPoint[F]("ServiceA") { c =>
+    import io.jaegertracing.Configuration.{SamplerConfiguration, ReporterConfiguration, SenderConfiguration}
+    Jaeger.entryPoint[F]("ServiceA") { config =>
       Sync[F].delay {
-        c.withSampler(new SamplerConfiguration().withType("const").withParam(1))
-          .withReporter(ReporterConfiguration.fromEnv)
+        config
+          .withSampler(new SamplerConfiguration().withType("const").withParam(1))
+          .withReporter(
+            new ReporterConfiguration()
+              .withSender(
+                new SenderConfiguration().withEndpoint("http://localhost:14268/api/traces"
+              )
+            )
+          )
           .getTracer
       }
     }
@@ -42,14 +49,14 @@ object ServerA extends IOApp {
   val channelFor: ChannelFor = ChannelForAddress("localhost", 12346)
 
   val happinessServiceClient: Resource[IO, HappinessService[Kleisli[IO, Span[IO], *]]] =
-    HappinessService.tracingClient[IO](channelFor)
+    HappinessService.contextClient[IO, Span[IO]](channelFor)
 
   def run(args: List[String]): IO[ExitCode] = {
-    entryPoint[IO].use { ep =>
+    entryPoint[IO].use { implicit ep =>
       happinessServiceClient.use { client =>
         implicit val greeter: Greeter[Kleisli[IO, Span[IO], *]] =
           new MyGreeter[Kleisli[IO, Span[IO], *]](client)
-        Greeter.bindTracingService[IO](ep).use { serviceDef =>
+        Greeter.bindContextService[IO, Span[IO]].use { serviceDef =>
           for {
             server <- GrpcServer.default[IO](12345, List(AddService(serviceDef)))
             _      <- GrpcServer.server[IO](server)

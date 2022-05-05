@@ -19,6 +19,7 @@ package com.example
 import cats.data.Kleisli
 import cats.effect._
 import com.example.happy._
+import higherkindness.mu.rpc.internal.tracing.implicits._
 import higherkindness.mu.rpc.server._
 import natchez._
 
@@ -26,22 +27,28 @@ object ServerB extends IOApp {
 
   def entryPoint[F[_]: Sync]: Resource[F, EntryPoint[F]] = {
     import natchez.jaeger.Jaeger
-    import io.jaegertracing.Configuration.SamplerConfiguration
-    import io.jaegertracing.Configuration.ReporterConfiguration
-    Jaeger.entryPoint[F]("ServiceB") { c =>
+    import io.jaegertracing.Configuration.{SamplerConfiguration, ReporterConfiguration, SenderConfiguration}
+    Jaeger.entryPoint[F]("ServiceB") { config =>
       Sync[F].delay {
-        c.withSampler(new SamplerConfiguration().withType("const").withParam(1))
-          .withReporter(ReporterConfiguration.fromEnv)
+        config
+          .withSampler(new SamplerConfiguration().withType("const").withParam(1))
+          .withReporter(
+            new ReporterConfiguration()
+              .withSender(
+                new SenderConfiguration().withEndpoint("http://localhost:14268/api/traces"
+              )
+            )
+          )
           .getTracer
       }
     }
   }
 
   def run(args: List[String]): IO[ExitCode] = {
-    entryPoint[IO].use { ep =>
+    entryPoint[IO].use { implicit ep =>
       implicit val service: HappinessService[Kleisli[IO, Span[IO], *]] =
         new MyHappinessService[Kleisli[IO, Span[IO], *]]
-      HappinessService.bindTracingService[IO](ep).use { serviceDef =>
+      HappinessService.bindContextService[IO, Span[IO]].use { serviceDef =>
         for {
           server <- GrpcServer.default[IO](12346, List(AddService(serviceDef)))
           _      <- GrpcServer.server[IO](server)

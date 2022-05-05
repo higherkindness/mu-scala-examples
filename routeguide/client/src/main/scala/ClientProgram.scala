@@ -25,7 +25,7 @@ import example.routeguide.common.Utils
 trait RouteGuideClient[F[_]] {
   def getFeature(lat: Int, lon: Int): F[Unit]
   def listFeatures(lowLat: Int, lowLon: Int, hiLat: Int, hiLon: Int): F[Unit]
-  def recordRoute(features: List[Feature], numPoints: Int): F[Unit]
+  def recordRoute(features: Seq[Feature], numPoints: Int): F[Unit]
   def routeChat: F[Unit]
 }
 

@@ -17,18 +17,32 @@
 package example.routeguide.common
 
 import io.circe._
-import io.circe.generic.semiauto._
 import example.routeguide.protocol.service._
 
 object Codecs {
 
-  implicit val pointDecoder: Decoder[Point] = deriveDecoder[Point]
-  implicit val pointEncoder: Encoder[Point] = deriveEncoder[Point]
+  implicit val pointCodec: Codec[Point] = Codec.forProduct2[Point, Int, Int](
+    "latitude", "longitude"
+  )(
+    (lat, lon) => Point(lat, lon)
+  )(
+    p => (p.latitude, p.longitude)
+  )
 
-  implicit val featureDecoder: Decoder[Feature] = deriveDecoder[Feature]
-  implicit val featureEncoder: Encoder[Feature] = deriveEncoder[Feature]
+  implicit val featureCodec: Codec[Feature] = Codec.forProduct2[Feature, String, Option[Point]](
+    "name", "location"
+  )(
+    (name, loc) => Feature(name, loc)
+  )(
+    f => (f.name, f.location)
+  )
 
-  implicit val featureDBDecoder: Decoder[FeatureDatabase] = deriveDecoder[FeatureDatabase]
-  implicit val featureDBEncoder: Encoder[FeatureDatabase] = deriveEncoder[FeatureDatabase]
+  implicit val featureDBCodec: Codec[FeatureDatabase] = Codec.forProduct1[FeatureDatabase, Seq[Feature]](
+    "feature"
+  )(
+    features => FeatureDatabase(features)
+  )(
+    _.feature
+  )
 
 }

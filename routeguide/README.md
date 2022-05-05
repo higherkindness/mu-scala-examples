@@ -1,12 +1,12 @@
 
 # Route Guide Example
 
-This module shows a simple example using [mu](https://github.com/higherkindness/mu), based on the Route Guide Demo (using Scala annotations for service definitions),
+This module shows a simple example using [mu](https://github.com/higherkindness/mu), based on the Route Guide Demo
 from [this example in grpc-java](https://github.com/grpc/grpc-java/tree/v1.10.x/examples/src/main/java/io/grpc/examples/routeguide).
 
 ## Running the Example
 
-Run server (interpreted to `cats.effect.IO` in this case):
+Run server:
 
 ```bash
 sbt routeguide-server/run
