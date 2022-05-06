@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package higherkindness.mu.rpc.healthcheck.sFs2
+package example.routeguide.client
 
-import cats.effect.unsafe.IORuntime
+import cats.effect.{IO, Resource}
+import example.routeguide.client.handlers.RouteGuideClientHandler
+import example.routeguide.protocol.service._
+import example.routeguide.runtime._
+import example.routeguide.client.runtime._
 
-trait CommonRuntimeFS2 {
+trait ClientIOImplicits extends RouteGuide with ClientConf {
 
-  implicit val runtime: IORuntime = IORuntime.global
+  implicit val routeGuideServiceClient: Resource[IO, RouteGuideService[IO]] =
+    RouteGuideService.client[IO](channelFor)
 
+  implicit val routeGuideClientHandler: RouteGuideClientHandler[IO] =
+    new RouteGuideClientHandler[IO]
 }
+object implicits extends ClientIOImplicits

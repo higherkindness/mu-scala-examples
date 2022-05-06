@@ -11,7 +11,7 @@ object ProjectPlugin extends AutoPlugin {
 
   object autoImport {
 
-    lazy val V = new {
+    object V {
       val catsEffect: String    = "3.3.11"
       val circe: String         = "0.14.1"
       val doobie: String        = "1.0.0-RC2"
@@ -20,11 +20,12 @@ object ProjectPlugin extends AutoPlugin {
       val log4cats: String      = "2.3.0"
       val log4s: String         = "1.10.0"
       val logback: String       = "1.2.11"
-      val mu: String            = "0.27.4"
+      val mu: String            = "0.28.0+57-dca00319-SNAPSHOT"
       val natchez: String       = "0.1.6"
       val pureconfig: String    = "0.17.1"
       val scala213: String      = "2.13.8"
       val scopt: String         = "4.0.1"
+      val slf4j: String         = "1.7.36"
     }
 
     def mu(module: String) = "io.higherkindness" %% module % V.mu
@@ -39,10 +40,11 @@ object ProjectPlugin extends AutoPlugin {
       )
     }
 
-    lazy val healthCheckSettingsFS2: Seq[Def.Setting[_]] = Seq(
+    lazy val healthCheckSettings: Seq[Def.Setting[_]] = Seq(
       libraryDependencies ++= Seq(
         "org.typelevel" %% "log4cats-core"  % V.log4cats,
         "org.typelevel" %% "log4cats-slf4j" % V.log4cats,
+        "org.slf4j"      % "slf4j-simple"   % V.slf4j,
         "co.fs2"        %% "fs2-core"       % V.fs2,
         "org.typelevel" %% "cats-effect"    % V.catsEffect
       )
@@ -135,7 +137,7 @@ object ProjectPlugin extends AutoPlugin {
         mu("mu-rpc-server"),
         mu("mu-rpc-client-netty"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.36"
+        "org.slf4j"     % "slf4j-simple"   % V.slf4j
       ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
     )
 
@@ -144,7 +146,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         mu("mu-rpc-server"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.36"
+        "org.slf4j"     % "slf4j-simple"   % V.slf4j
       ).map(_.exclude("org.slf4j", "slf4j-jdk14"))
     )
 
@@ -152,7 +154,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         mu("mu-rpc-client-netty"),
         "org.tpolecat" %% "natchez-jaeger" % V.natchez,
-        "org.slf4j"     % "slf4j-simple"   % "1.7.36"
+        "org.slf4j"     % "slf4j-simple"   % V.slf4j
       )
     )
 
