@@ -1,5 +1,6 @@
 ThisBuild / organization := "io.higherkindness"
 ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / resolvers += Resolver.sonatypeRepo("snapshots")
 
 publish / skip := true
 
@@ -31,22 +32,16 @@ lazy val `routeguide-server` = project
   .in(file("routeguide/server"))
   .dependsOn(`routeguide-common`)
   .dependsOn(`routeguide-runtime`)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
+  .settings(
+    fork := true,
+    libraryDependencies ++= Seq(mu("mu-rpc-server"))
+  )
 
 lazy val `routeguide-client` = project
   .in(file("routeguide/client"))
   .dependsOn(`routeguide-common`)
   .dependsOn(`routeguide-runtime`)
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty")))
-  .settings(
-    Compile / unmanagedSourceDirectories ++= Seq(
-      baseDirectory.value / "src" / "main" / "scala-io",
-      baseDirectory.value / "src" / "main" / "scala-task"
-    )
-  )
-  .settings(
-    addCommandAlias("runClientIO", "runMain example.routeguide.client.io.ClientAppIO")
-  )
 
 lazy val routeguide = project
   .aggregate(
@@ -79,7 +74,10 @@ lazy val `seed-protobuf-protocol` = project
 
 lazy val `seed-server` = project
   .in(file("seed/server"))
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-server")))
+  .settings(
+    fork := true,
+    libraryDependencies ++= Seq(mu("mu-rpc-server"))
+  )
   .dependsOn(`seed-avro-protocol`, `seed-protobuf-protocol`, `seed-config`)
   .settings(exampleSeedLogSettings)
 
@@ -142,7 +140,10 @@ lazy val `todolist-server` = project
   .dependsOn(`todolist-runtime`)
   .dependsOn(`todolist-model`)
   .dependsOn(`todolist-persistence`)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-server"), mu("mu-config")))
+  .settings(
+    fork := true,
+    libraryDependencies ++= Seq(mu("mu-rpc-server"), mu("mu-config"))
+  )
   .settings(exampleTodolistCommonSettings)
 
 lazy val todolist = project
@@ -159,28 +160,34 @@ lazy val todolist = project
 ////  HEALTH-CHECK  ////
 ////////////////////////
 
-/////////HealthCheck Server FS2 Example
-lazy val `health-server-fs2` = project
-  .in(file("health-check/health-server-fs2"))
+/////////HealthCheck Server Example
+lazy val `health-server` = project
+  .in(file("health-check/health-server"))
   .settings(
+    fork := true,
     libraryDependencies ++= Seq(
       mu("mu-rpc-server"),
       mu("mu-rpc-fs2"),
       mu("mu-rpc-health-check")
     )
   )
-  .settings(healthCheckSettingsFS2)
+  .settings(healthCheckSettings)
 
 /////////HealthCheck Client Example
 lazy val `health-client` = project
   .in(file("health-check/health-client"))
-  .dependsOn(`health-server-fs2`)
-  .settings(libraryDependencies ++= Seq(mu("mu-rpc-client-netty"), mu("mu-config")))
-  .settings(healthCheckSettingsFS2)
+  .settings(
+    libraryDependencies ++= Seq(
+      mu("mu-rpc-health-check"),
+      mu("mu-rpc-client-netty"),
+      mu("mu-config")
+    )
+  )
+  .settings(healthCheckSettings)
 
 lazy val `health-check` = project
   .aggregate(
-    `health-server-fs2`,
+    `health-server`,
     `health-client`
   )
 

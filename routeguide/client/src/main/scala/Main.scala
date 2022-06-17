@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package higherkindness.mu.rpc.healthcheck.sMonix
+package example.routeguide.client
 
-trait CommonRuntimeMonix {
-  val EC: scala.concurrent.ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+import cats.effect.IO
+import org.log4s._
+import example.routeguide.client.implicits._
+import example.routeguide.client.ClientProgram._
 
-  implicit val S: monix.execution.Scheduler = monix.execution.Scheduler.Implicits.global
+object Main {
 
-  implicit val timer: cats.effect.Timer[cats.effect.IO] =
-    cats.effect.IO.timer(EC)
-  implicit val cs: cats.effect.ContextShift[cats.effect.IO] =
-    cats.effect.IO.contextShift(EC)
+  val logger = getLogger
+
+  def main(args: Array[String]): Unit = {
+    logger.info(s"${Thread.currentThread().getName} Starting client, interpreting to Future ...")
+
+    clientProgram[IO].unsafeRunSync()
+
+    logger.info(s"${Thread.currentThread().getName} Finishing program interpretation ...")
+  }
 
 }

@@ -80,21 +80,17 @@ class RouteGuideServiceHandler[F[_]: Async] extends RouteGuideService[F] {
 
   override def recordRoute(points: Stream[F, Point]): F[RouteSummary] =
     // For each point after the first, add the incremental distance from the previous point to
-    // the total distance value. We're starting
-
-    // We have to applyApplies a binary operator to a start value and all elements of
-    // the source, going left to right and returns a new `Task` that
-    // upon evaluation will eventually emit the final result.
+    // the total distance value
     points
       .fold((RouteSummary(0, 0, 0, 0), None: Option[Point], System.nanoTime())) {
         case ((summary, previous, startTime), point) =>
           val feature  = point.findFeatureIn(features)
           val distance = previous.map(calcDistance(_, point)) getOrElse 0
           val updated = summary.copy(
-            point_count = summary.point_count + 1,
-            feature_count = summary.feature_count + (if (feature.valid) 1 else 0),
+            pointCount = summary.pointCount + 1,
+            featureCount = summary.featureCount + (if (feature.valid) 1 else 0),
             distance = summary.distance + distance,
-            elapsed_time = NANOSECONDS.toSeconds(System.nanoTime() - startTime).toInt
+            elapsedTime = NANOSECONDS.toSeconds(System.nanoTime() - startTime).toInt
           )
           (updated, Some(point), startTime)
       }
