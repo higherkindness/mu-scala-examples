@@ -25,7 +25,7 @@ object ProjectPlugin extends AutoPlugin {
       val pureconfig: String    = "0.17.1"
       val scala213: String      = "2.13.9"
       val scopt: String         = "4.1.0"
-      val slf4j: String         = "2.0.2"
+      val slf4j: String         = "2.0.3"
     }
 
     def mu(module: String) = "io.higherkindness" %% module % V.mu
