@@ -19,7 +19,7 @@ object ProjectPlugin extends AutoPlugin {
       val kindProjector: String = "0.13.2"
       val log4cats: String      = "2.5.0"
       val log4s: String         = "1.10.0"
-      val logback: String       = "1.4.1"
+      val logback: String       = "1.4.3"
       val mu: String            = "0.29.0"
       val natchez: String       = "0.1.6"
       val pureconfig: String    = "0.17.1"
