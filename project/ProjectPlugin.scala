@@ -12,20 +12,20 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     object V {
-      val catsEffect: String    = "3.3.12"
-      val circe: String         = "0.14.2"
+      val catsEffect: String    = "3.3.14"
+      val circe: String         = "0.14.3"
       val doobie: String        = "1.0.0-RC2"
-      val fs2: String           = "3.2.7"
+      val fs2: String           = "3.3.0"
       val kindProjector: String = "0.13.2"
-      val log4cats: String      = "2.3.0"
+      val log4cats: String      = "2.5.0"
       val log4s: String         = "1.10.0"
-      val logback: String       = "1.2.11"
+      val logback: String       = "1.4.4"
       val mu: String            = "0.29.0"
       val natchez: String       = "0.1.6"
       val pureconfig: String    = "0.17.1"
-      val scala213: String      = "2.13.8"
-      val scopt: String         = "4.0.1"
-      val slf4j: String         = "1.7.36"
+      val scala213: String      = "2.13.10"
+      val scopt: String         = "4.1.0"
+      val slf4j: String         = "2.0.3"
     }
 
     def mu(module: String) = "io.higherkindness" %% module % V.mu
