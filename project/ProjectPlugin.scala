@@ -12,7 +12,7 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     object V {
-      val catsEffect: String    = "3.4.2"
+      val catsEffect: String    = "3.4.4"
       val circe: String         = "0.14.3"
       val doobie: String        = "1.0.0-RC2"
       val fs2: String           = "3.4.0"
@@ -25,7 +25,7 @@ object ProjectPlugin extends AutoPlugin {
       val pureconfig: String    = "0.17.2"
       val scala213: String      = "2.13.10"
       val scopt: String         = "4.1.0"
-      val slf4j: String         = "2.0.5"
+      val slf4j: String         = "2.0.6"
     }
 
     def mu(module: String) = "io.higherkindness" %% module % V.mu
