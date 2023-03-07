@@ -111,6 +111,7 @@ lazy val seed = project
 lazy val `todolist-protocol` = project
   .in(file("todolist/protocol"))
   .enablePlugins(SrcGenPlugin)
+  .settings(scalacOptions += "-Ymacro-annotations")
   .settings(libraryDependencies ++= Seq(mu("mu-rpc-service")))
 
 lazy val `todolist-runtime` = project
