@@ -22,7 +22,7 @@ import cats.effect._
 import cats.syntax.all._
 import example.seed.protocol.proto.people._
 import example.seed.protocol.proto.services._
-import fs2._
+import fs2.Stream
 import higherkindness.mu.rpc.ChannelForAddress
 import higherkindness.mu.rpc.channel.{ManagedChannelInterpreter, UsePlaintext}
 import org.typelevel.log4cats.Logger
