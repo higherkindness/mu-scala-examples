@@ -21,7 +21,7 @@ import cats.effect._
 import com.example.hello._
 import higherkindness.mu.rpc._
 import higherkindness.mu.rpc.internal.tracing.implicits.clientContext
-import fs2._
+import fs2.Stream
 import natchez._
 
 object Client extends IOApp {
