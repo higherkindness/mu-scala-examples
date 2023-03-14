@@ -169,7 +169,7 @@ object ProjectPlugin extends AutoPlugin {
       scalacOptions ++= Seq(
         "-Xlint:-missing-interpolator",
         "-Xlint:-byname-implicit",
-        //"-P:silencer:pathFilters=.*[/]src_managed[/].*",
+        // "-P:silencer:pathFilters=.*[/]src_managed[/].*",
         "-Wconf:src=src_managed/.*:silent"
       ), // per https://github.com/scala/bug/issues/12072, we need to disable the warnings from doobie
       addCompilerPlugin(
