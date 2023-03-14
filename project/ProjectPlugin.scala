@@ -168,7 +168,9 @@ object ProjectPlugin extends AutoPlugin {
       scalacOptions --= Seq("-Xfuture", "-Xfatal-warnings"),
       scalacOptions ++= Seq(
         "-Xlint:-missing-interpolator",
-        "-Xlint:-byname-implicit"
+        "-Xlint:-byname-implicit",
+        //"-P:silencer:pathFilters=.*[/]src_managed[/].*",
+        "-Wconf:src=src_managed/.*:silent"
       ), // per https://github.com/scala/bug/issues/12072, we need to disable the warnings from doobie
       addCompilerPlugin(
         "org.typelevel" %% "kind-projector" % V.kindProjector cross CrossVersion.full

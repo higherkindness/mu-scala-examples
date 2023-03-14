@@ -104,7 +104,7 @@ class RouteGuideServiceHandler[F[_]: Async] extends RouteGuideService[F] {
       .flatMap { note: RouteNote =>
         logger.info(s"Got route note $note, adding it... ")
 
-        addNote(note)
+        (addNote(note)): Unit
         Stream.fromIterator(
           getOrCreateNotes(
             note.location.getOrElse(throw new PointNotFoundError("location not found"))
