@@ -35,8 +35,7 @@ object ClientApp {
 
     logger.info(s"${Thread.currentThread().getName} Closing client...")
 
-    StdIn.readLine()
-    (): Unit
+    StdIn.readLine(): Unit
   }
 
 }

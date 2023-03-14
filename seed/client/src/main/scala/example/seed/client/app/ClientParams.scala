@@ -18,11 +18,13 @@ package example.seed.client.app
 
 import example.seed.client.common.models.ParamsConfig
 import scopt.OptionParser
+import scala.annotation.nowarn
 
 object ClientParams {
 
   val default = ParamsConfig("Foo")
 
+  @nowarn
   def paramsConfig(name: String): OptionParser[ParamsConfig] =
     new scopt.OptionParser[ParamsConfig](name) {
 
