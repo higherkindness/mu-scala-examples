@@ -14,7 +14,7 @@ object ProjectPlugin extends AutoPlugin {
     object V {
       val catsEffect: String    = "3.5.0"
       val circe: String         = "0.14.5"
-      val doobie: String        = "1.0.0-RC2"
+      val doobie: String        = "1.0.0-RC4"
       val fs2: String           = "3.6.1"
       val kindProjector: String = "0.13.2"
       val log4cats: String      = "2.6.0"
