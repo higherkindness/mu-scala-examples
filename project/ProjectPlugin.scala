@@ -12,16 +12,16 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     object V {
-      val catsEffect: String    = "3.4.11"
+      val catsEffect: String    = "3.5.0"
       val circe: String         = "0.14.5"
-      val doobie: String        = "1.0.0-RC2"
+      val doobie: String        = "1.0.0-RC4"
       val fs2: String           = "3.6.1"
       val kindProjector: String = "0.13.2"
       val log4cats: String      = "2.6.0"
       val log4s: String         = "1.10.0"
-      val logback: String       = "1.4.7"
+      val logback: String       = "1.4.8"
       val mu: String            = "0.30.3"
-      val natchez: String       = "0.3.1"
+      val natchez: String       = "0.3.2"
       val pureconfig: String    = "0.17.4"
       val scala213: String      = "2.13.10"
       val scopt: String         = "4.1.0"
