@@ -24,20 +24,23 @@ import shapeless.Poly1
 object handlers {
 
   object PeopleResponseLogger extends Poly1 {
-    implicit val peh1: PeopleResponseLogger.Case.Aux[NotFoundError, String] = 
+    implicit val peh1: PeopleResponseLogger.Case.Aux[NotFoundError, String] =
       at[NotFoundError](_.message)
-    implicit val peh2: PeopleResponseLogger.Case.Aux[DuplicatedPersonError, String] = 
+    implicit val peh2: PeopleResponseLogger.Case.Aux[DuplicatedPersonError, String] =
       at[DuplicatedPersonError](_.message)
-    implicit val peh3: PeopleResponseLogger.Case.Aux[Person, String] = 
+    implicit val peh3: PeopleResponseLogger.Case.Aux[Person, String] =
       at[Person](_.toString)
   }
 
   object PeopleResponseHandler extends Poly1 {
-    implicit val peh1: PeopleResponseHandler.Case.Aux[NotFoundError, Either[PeopleError, Person]] = 
+    implicit val peh1: PeopleResponseHandler.Case.Aux[NotFoundError, Either[PeopleError, Person]] =
       at[NotFoundError](e => PeopleError(e.message).asLeft[Person])
-    implicit val peh2: PeopleResponseHandler.Case.Aux[DuplicatedPersonError, Either[PeopleError, Person]] = 
+    implicit val peh2: PeopleResponseHandler.Case.Aux[DuplicatedPersonError, Either[
+      PeopleError,
+      Person
+    ]] =
       at[DuplicatedPersonError](e => PeopleError(e.message).asLeft[Person])
-    implicit val peh3: PeopleResponseHandler.Case.Aux[Person, Either[PeopleError, Person]] = 
+    implicit val peh3: PeopleResponseHandler.Case.Aux[Person, Either[PeopleError, Person]] =
       at[Person](_.asRight[PeopleError])
   }
 }
