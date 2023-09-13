@@ -1,5 +1,5 @@
 ThisBuild / organization := "io.higherkindness"
-ThisBuild / scalaVersion := "2.13.11"
+ThisBuild / scalaVersion := "2.13.12"
 ThisBuild / resolvers += Resolver.sonatypeRepo("snapshots")
 
 publish / skip := true

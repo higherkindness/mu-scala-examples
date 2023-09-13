@@ -23,7 +23,7 @@ object ProjectPlugin extends AutoPlugin {
       val mu: String            = "0.30.3"
       val natchez: String       = "0.3.3"
       val pureconfig: String    = "0.17.4"
-      val scala213: String      = "2.13.11"
+      val scala213: String      = "2.13.12"
       val scopt: String         = "4.1.0"
       val slf4j: String         = "2.0.9"
     }
