@@ -21,7 +21,7 @@ object ProjectPlugin extends AutoPlugin {
       val log4s: String         = "1.10.0"
       val logback: String       = "1.4.14"
       val mu: String            = "0.31.1"
-      val natchez: String       = "0.3.4"
+      val natchez: String       = "0.3.5"
       val pureconfig: String    = "0.17.4"
       val scala213: String      = "2.13.12"
       val scopt: String         = "4.1.0"
