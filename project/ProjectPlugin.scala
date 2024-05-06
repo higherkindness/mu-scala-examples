@@ -17,7 +17,7 @@ object ProjectPlugin extends AutoPlugin {
       val doobie: String        = "1.0.0-RC5"
       val fs2: String           = "3.10.2"
       val kindProjector: String = "0.13.3"
-      val log4cats: String      = "2.6.0"
+      val log4cats: String      = "2.7.0"
       val log4s: String         = "1.10.0"
       val logback: String       = "1.5.6"
       val mu: String            = "0.31.1"
