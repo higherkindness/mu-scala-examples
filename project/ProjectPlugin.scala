@@ -12,7 +12,7 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     object V {
-      val catsEffect: String    = "3.6.2"
+      val catsEffect: String    = "3.6.3"
       val circe: String         = "0.14.14"
       val doobie: String        = "1.0.0-RC5"
       val fs2: String           = "3.12.0"
